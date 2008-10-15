@@ -1,9 +1,9 @@
 #labels Featured
-#This is a processor for heritrix that writes fetched pages to hbase.
+This is a processor for heritrix that writes fetched pages to hbase.
 
 = Introduction =
 
-The layout of this contribution is modeled after Doug Judds'
+The layout of this contribution is modeled after Doug Judds
 heritrix-hadoop-dfs-processor available off the heritrix home page.
 
 This software is licensed under the LGPL.  See accompanying LICENSE.txt document.
@@ -25,26 +25,28 @@ APIs have not changed.  Just replace the jar files with the newer versions.
 
 
 = SETUP =
-*. Start an instance of hbase.
-*. Install heritrix-2.0.x
-*. Copy the following jar files into the ${HERITRIX_HOME}/lib directory:
+ *. Start an instance of hbase.
+ *. Install heritrix-2.0.x
+ *. Copy the following jar files into the ${HERITRIX_HOME}/lib directory:
 
   hbase-writer-x.x.x.jar
+
   hbase-x.x.x.jar
+
   hadoop-x.x.x-core.jar
+
   log4j-x.x.x.jar
 
-*. Start Heritrix
+ *. Start Heritrix
 
 
 = CONFIGURING HERITRIX =
 
 On the "Settings for sheet 'global'":
 
-* Click on a 'details' link and add new processor com.powerset.heritrix.writer.HBaseWriterProcessor.
-* Return to the global sheet and set this as your writer (the page will not draw completely if
-did not type in the name of the processor properly -- see heritrix_out.log for errors).
-* Set at least the master and table configuration for HBaseWriterProcessor.
+ * Click on a 'details' link and add new processor com.powerset.heritrix.writer.HBaseWriterProcessor.
+ * Return to the global sheet and set this as your writer (the page will not draw completely if did not type in the name of the processor properly -- see heritrix_out.log for errors).
+ * Set at least the master and table configuration for HBaseWriterProcessor.
 
 master
   The host and port of the hbase master server.
