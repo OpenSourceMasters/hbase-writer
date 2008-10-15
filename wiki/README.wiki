@@ -88,7 +88,7 @@ A sample settings.xml file:
  </settings> 
   
 Place this file in your ${HOME}/.m2/ directory and run the maven build command:
- mvn clean package -PmyBuild
+ mvn clean package -PmyBuild 
  
 = BUILDING THE SITE REPORT =
 
