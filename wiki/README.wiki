@@ -71,6 +71,8 @@ For example:
   cp ${HOME}/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar ${HERITRIX_HOME}/lib/
   
 = UPGRADING TO NEW HADOOP/HBASE/HERITRIX VERSIONS =
+This project will be keeping up to date with the latest hadoop, hbase and heritrix versions, but if you would like to compile and build hbase-writer against different versions, you are able to do so with maven.
+
 To build hbase-writer with new versions of hadoop, hbase or heritrix (or any of the dependencies), use a ${HOME}/.m2/settings.xml file.
 
 A sample settings.xml file:
