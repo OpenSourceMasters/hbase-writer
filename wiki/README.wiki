@@ -55,6 +55,7 @@ table
   Which table to crawl into.
 
 = COMPILING THE SOURCE =
+The source is built using Maven2.
   mvn clean compile
 
 = BUILDING THE JAR =
