@@ -94,7 +94,7 @@ Place this file in your ${HOME}/.m2/ directory and run the maven build command:
 By typing the command:
  mvn help:effective-pom -PmyBuild
 
-you will get the resolved pom.xml dump to stdout.  Here you can verify that
+you will get the resolved pom.xml dumped to stdout.  Here you can verify that
 you are overriding the properties correctly.
 
 = BUILDING THE SITE REPORT =
