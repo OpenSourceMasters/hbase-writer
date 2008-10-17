@@ -63,7 +63,7 @@ The source is built using Maven2.
 
 The hbase-writer-x.x.x.jar should be in the target/ directory.  
 
-= Obtaining the Dependency Jars =
+= OBTAINING THE DEPENDENCY JARS =
 You can get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory.
 For example:
   cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.18.0/hbase-0.18.0.jar ${HERITRIX_HOME}/lib/
