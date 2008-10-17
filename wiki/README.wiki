@@ -62,6 +62,8 @@ The source is built using Maven2.
   mvn clean package
 
 The hbase-writer-x.x.x.jar should be in the target/ directory.  
+
+= Obtaining the Dependency Jars =
 You can get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory.
 For example:
   cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.18.0/hbase-0.18.0.jar ${HERITRIX_HOME}/lib/
@@ -69,6 +71,10 @@ For example:
   cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.18.0/hadoop-core-0.18.0.jar ${HERITRIX_HOME}/lib/ 
 
   cp ${HOME}/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar ${HERITRIX_HOME}/lib/
+
+You can also get them by visiting the hbase-writer archive repository:
+http://dev.opensourcemasters.org:8081/nexus/
+
   
 = UPGRADING TO NEW HADOOP/HBASE/HERITRIX VERSIONS =
 The hbase-writer project will be keeping up to date with the latest hadoop, hbase and heritrix versions, but if you would like to compile and build hbase-writer against different versions, you are able to do so with maven2 without changing any versioned files.
