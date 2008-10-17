@@ -73,7 +73,7 @@ For example:
   cp ${HOME}/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar ${HERITRIX_HOME}/lib/
 
 You can also get them by visiting the hbase-writer archive repository:
-http://dev.opensourcemasters.org:8081/nexus/
+http://repo1.opensourcemasters.org:8081/nexus/
 
   
 = UPGRADING TO NEW HADOOP/HBASE/HERITRIX VERSIONS =
