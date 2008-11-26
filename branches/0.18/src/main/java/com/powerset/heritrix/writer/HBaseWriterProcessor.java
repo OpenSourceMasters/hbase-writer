@@ -265,15 +265,10 @@ Initializable, Closeable {
       w.write(curi, getHostAddress(curi),
           curi.getRecorder().getRecordedOutput(),
           curi.getRecorder().getRecordedInput());
-    } catch (IOException e) {
-      writer = null;
-      throw e;
     } finally {
-      if (writer != null) {
-        setTotalBytesWritten(getTotalBytesWritten() +
-            (writer.getPosition() - position));
-        getPool().returnFile(writer);
-      }
+      setTotalBytesWritten(getTotalBytesWritten() +
+          (writer.getPosition() - position));
+      getPool().returnFile(writer);
     }
     return checkBytesWritten(curi);
   }

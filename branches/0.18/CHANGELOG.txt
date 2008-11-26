@@ -1,4 +1,8 @@
-HBase Change Log
+HBase-Writer Change Log
+
+
+  ISSUE-5 - If HBase throws an exception, the Hbase-Writer is not added back to the writer pool.  (Patch submitted by Andrew Purtell via Ryan Smith)
+   
 
 Release 0.18.0 
   Initial Release - Compatible with hadoop-0.18.0, hbase-0.18.0 & heritrix 2.0.1
