@@ -1,4 +1,4 @@
-/*
+/**
  * HBaseWriterProcessor
  *
  * $Id$
