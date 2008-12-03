@@ -4,11 +4,9 @@
 Currently HBase-Writer has 2 active branches (to match the hbase project)
 
 * /trunk
+supports hadoop-trunk and hbase-trunk.
 
 * /branches/0.18
-
-/trunk supports hadoop-trunk and hbase-trunk.
-
-/branches/0.18 supports hadoop-0.18.X and hbase-0.18.X
+ supports hadoop-0.18.X and hbase-0.18.X
 
 All branches work with Heritrix 2.0.X.
