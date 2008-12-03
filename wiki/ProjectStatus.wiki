@@ -4,6 +4,7 @@
 Currently HBase-Writer has 2 active branches (to match the hbase project)
 
 * /trunk
+
 * /branches/0.18
 
 /trunk supports hadoop-trunk and hbase-trunk.
