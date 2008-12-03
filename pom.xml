@@ -384,7 +384,7 @@
      <hbase-writer.distribution-manager.report-site>/usr/local/www/projects.osm/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
      
      <heritrix.version>2.0.1</heritrix.version>
-     <hadoop.version>0.18.1</hadoop.version>
+     <hadoop.version>0.18.2</hadoop.version>
      <hbase.version>0.18.1</hbase.version>
      <fastutil.version>5.0.7</fastutil.version>
      <overlay.commons-pool.version>1.3</overlay.commons-pool.version>
