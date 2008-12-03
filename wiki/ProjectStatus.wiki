@@ -1,5 +1,5 @@
 #labels Phase-Requirements,Phase-Design
-#Current Project Status of HBase-Writer.
+= Current Project Status of HBase-Writer =
 
 Currently HBase-Writer has 2 active branches (to match the hbase project)
 
