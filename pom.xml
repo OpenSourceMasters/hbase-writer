@@ -111,17 +111,17 @@
   
   <distributionManagement>
      <repository>
-        <id>hbaswriter-releases</id>
+        <id>hbasewriter-releases</id>
         <name>HBaseWriter Release Repository</name>
         <url>${hbase-writer.distribution-manager.releases}</url>
       </repository>
       <snapshotRepository>
-        <id>hbaswriter-snapshots</id>
+        <id>hbasewriter-snapshots</id>
         <name>HBaseWriter Snapshot Repository</name>
         <url>${hbase-writer.distribution-manager.snapshots}</url>
       </snapshotRepository>
       <site>
-        <id>hbaswriter-sites</id>
+        <id>hbasewriter-sites</id>
         <name>HBaseWriter Maven Site-Reports</name>
         <url>${hbase-writer.distribution-manager.report-site}</url>
       </site>
