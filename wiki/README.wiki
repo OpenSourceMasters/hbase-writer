@@ -19,7 +19,7 @@ for compression.  This facilitates running high-speed, distributed computations
 over content crawled with Heritrix.
 
 The current version of heritrix-hadoop-dfs-writer-processor assumes version
-2.0.x of Heritrix and version 0.19.x of Hadoop.  Newer versions of Hadoop
+2.0.x of Heritrix, version 0.19.x of Hadoop/HBase and Java 1.6.  Newer versions of Hadoop
 and Heritrix may continue to work with this connector as long as the pertinent
 APIs have not changed.  Just replace the jar files with the newer versions.
 
