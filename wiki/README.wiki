@@ -19,7 +19,7 @@ for compression.  This facilitates running high-speed, distributed computations
 over content crawled with Heritrix.
 
 The current version of heritrix-hadoop-dfs-writer-processor assumes version
-2.0.x of Heritrix and version 0.18.x of Hadoop.  Newer versions of Hadoop
+2.0.x of Heritrix and version 0.19.x of Hadoop.  Newer versions of Hadoop
 and Heritrix may continue to work with this connector as long as the pertinent
 APIs have not changed.  Just replace the jar files with the newer versions.
 
@@ -70,16 +70,16 @@ The hbase-writer-x.x.x.jar should be in the target/ directory.
 You can get the hadoop (http://hadoop.apache.org/core/), hbase (http://hbase.org/) and log4j jars from downloading the releases from these 2 sites.
 You can also get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory after you have built the project using maven.
 For example:
-  cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.18.1/hbase-0.18.1.jar ${HERITRIX_HOME}/lib/
+  cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.19.0/hbase-0.19.0.jar ${HERITRIX_HOME}/lib/
 
-  cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.18.1/hadoop-core-0.18.1.jar ${HERITRIX_HOME}/lib/ 
+  cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.19.0/hadoop-core-0.19.0.jar ${HERITRIX_HOME}/lib/ 
 
-  cp ${HOME}/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar ${HERITRIX_HOME}/lib/
+  cp ${HOME}/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15.jar ${HERITRIX_HOME}/lib/
 
 You can also get them by visiting the hbase-writer archive repository:
 http://repo1.opensourcemasters.org:8081/nexus/
 
-  
+
 = UPGRADING TO NEW HADOOP/HBASE/HERITRIX VERSIONS =
 The hbase-writer project will be keeping up to date with the latest hadoop, hbase and heritrix versions, but if you would like to compile and build hbase-writer against different versions, you are able to do so with maven2 without changing any versioned files.
 
