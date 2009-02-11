@@ -52,7 +52,10 @@ master
   The host and port of the hbase master server.
 
 table
-  Which table to crawl into.
+  Which table to crawl into.  The table does need to exist, it will get auto-created.
+
+only-new-records
+  Set to "false" by default.  In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls).  By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table. 
 
 = COMPILING THE SOURCE =
 The source is built using Maven2.
