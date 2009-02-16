@@ -51,7 +51,7 @@ table
   Which table to crawl into.  The table does need to exist, it will get auto-created.
 
 only-new-records
-  Set to "false" by default.  In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls).  By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table. 
+  Set to "false" by default.  In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls).  By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table.  Also, if set to "true", heritrix doesnt download any content that is already existing as a record in the hbase table. 
 
 = COMPILING THE SOURCE =
 The source is built using Maven2.
