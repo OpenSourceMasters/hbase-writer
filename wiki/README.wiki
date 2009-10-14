@@ -29,6 +29,8 @@ APIs have not changed.  Just replace the jar files with the newer versions.
 
   hbase-x.x.x.jar
 
+  zookeeper-x.x.x.jar
+
   hadoop-x.x.x-core.jar
 
   log4j-x.x.x.jar
@@ -44,14 +46,23 @@ On the "Settings for sheet 'global'":
  * Return to the global sheet and set this as your writer (the page will not draw completely if did not type in the name of the processor properly -- see heritrix_out.log for errors).
  * Set at least the master and table configuration for HBaseWriterProcessor.
 
-master
-  The host and port of the hbase master server.
+zkquorum
+  The zookeeper quroum that serves the hbase master address.  Since hbase-0.20.0, the master server's address is returned by the zookeeper quorum.
+  So this value is a comma seperated list of the zk quorum.
+  i.e.: zkHost1,zkHost2,zkHost3
 
 table
-  Which table to crawl into.  The table does need to exist, it will get auto-created.
+  Which table in HBase to write the crawl to.  This table will be created automatically if it doesnt exist.
+  i.e.: Webtable
+  
+write-only-new-records
+  Set to "false" by default.  In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls).  
+  By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table.  
 
-only-new-records
-  Set to "false" by default.  In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls).  By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table.  Also, if set to "true", heritrix doesnt download any content that is already existing as a record in the hbase table. 
+process-only-new-records
+  Set to "false" by default.  In default mode, heritrix will process (fetch and parse) all urls regardless of existing rowkeys (urls).  
+  By setting this to "true" you ensure that only new urls(rowkeys) are processed by heritrix.  Also, if set to "true", 
+  heritrix doesnt download any content that is already existing as a record in the hbase table.
 
 = COMPILING THE SOURCE =
 The source is built using Maven2.
@@ -66,10 +77,9 @@ The hbase-writer-x.x.x.jar should be in the target/ directory.
 You can get the hadoop (http://hadoop.apache.org/core/), hbase (http://hbase.org/) and log4j jars from downloading the releases from these 2 sites.
 You can also get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory after you have built the project using maven.
 For example:
-  cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.19.0/hbase-0.19.0.jar ${HERITRIX_HOME}/lib/
-
-  cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.19.0/hadoop-core-0.19.0.jar ${HERITRIX_HOME}/lib/ 
-
+  cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.20.1/hbase-0.20.1.jar ${HERITRIX_HOME}/lib/
+  cp ${HOME}/.m2/repository/org/apache/hadoop/zookeeper/3.2.1/zookeeper-3.2.1.jar ${HERITRIX_HOME}/lib/
+  cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.20.1/hadoop-core-0.20.1.jar ${HERITRIX_HOME}/lib/ 
   cp ${HOME}/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15.jar ${HERITRIX_HOME}/lib/
 
 You can also get them by visiting the hbase-writer archive repository:
@@ -89,8 +99,9 @@ A sample settings.xml file:
 	  <id>myBuild</id>
 	  <properties>
             <heritrix.version>2.0.2</heritrix.version>
-            <hbase.version>0.18.1</hbase.version>
-            <hadoop.version>0.18.1</hadoop.version>
+            <hbase.version>0.20.2</hbase.version>
+            <hadoop.version>0.20.2</hadoop.version>
+            <zookeeper.version>3.2.1</zookeeper.version>
 	  </properties>
 	</profile>
   </profiles>
