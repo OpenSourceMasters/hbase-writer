@@ -1,0 +1,20 @@
+#labels Phase-QA
+==News Archive==
+
+===October 13th 2009===
+Upgraded and now testing the trunk on Hbase 0.20.1, and at the moment I am having ZooKeeper configuration issues.  Once I work these out, I'll be updating the new dependency list which will include the zookeeper jar.  Wish me luck! :)  Feel free to download the hbase-wrtier-0.20.0-SNAPSHOT jar from the archive repository manager.  When it is fully tested and working, I will release 0.20.
+
+===October 8th 2009===
+HBase 0.20.0 has been released.  I am testing hbase-writer on hbase-0.20.0 cluster today and should have a 0.20.0 release of hbase-writer by the end of the week.
+
+===Feb. 16th 2009===
+HBase-Writer version 0.19.1 has been released.  This version fixes the new feature added in 0.19.0: "only_new_records".  After 0.19.0 was released, it was realized that since content was not being downloaded by Heritrix from the webserver when 'only_new_records' was set to "true", then Heritrix couldnt follow any more links on sites that were partially crawled.  So  it was then discovered that Heritrix needs to download the content to pages already crawled to get the new links to crawl (or save the state of the crawl before ending the crawl).  So this problem is probably best handled by Heritrix itself by taking snapshots during the crawl or overriding the extractor classes in Heritrix to save parsed urls.  So hbase-writer 0.19.1 will download all urls found by Heritrix, and only write new records to the Hbase table when 'only_new_records' is set to "true".  Default is "false" which is to write all crawled urls as the same row key records with different (new) timestamped cells in the given HBase table on every crawl.  Compiled on 1.6, Enjoy.
+
+
+===Feb. 11th 2009===
+HBase-Writer version 0.19.0 has been released.  This version has been tested on a few crawls, large and small and works on hadoop & hbase 0.19.0.  A new feature has been added: only-new-records.   This boolean is set to "false" by default. In default mode, heritrix will crawl all urls regardless of existing rowkeys (urls). By setting this to "true" you ensure that only new urls(rowkeys) are written to the crawl table.  Also please note, this version of hadoop now requires Java 1.6 (http://hadoop.apache.org/core/docs/r0.19.0/releasenotes.html - first item) so hbase-writer-0.19.X now requires Java 1.6 as well.   Enjoy.
+
+===Feb. 2nd 2009===
+HBase has released 0.19.0 on January 21st 2009.
+
+HBase-Writer 0.19-SNAPSHOT is being tested against hbase-0.19.0 release and hadoop-0.19.0 release.  Once a few runs have been done, I will release hbase-writer 0.19.0.
