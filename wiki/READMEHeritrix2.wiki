@@ -36,13 +36,19 @@ This facilitates running high-speed, distributed computations over content crawl
 = QUICK SETUP = 
 
 1. Start an instance of hbase.
+
 2. Install heritrix-2.0.x
+
 3. Copy the following jar files into the ${HERITRIX_HOME}/lib directory:
 
   hbase-writer-x.x.x.jar
+
   hbase-x.x.x.jar
+
   zookeeper-x.x.x.jar
+
   hadoop-x.x.x-core.jar
+
   log4j-x.x.x.jar
 
 4. Start Heritrix
