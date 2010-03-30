@@ -1,5 +1,5 @@
 #labels Phase-QA
-==News Archive==
+
 
 ===October 13th 2009===
 Upgraded and now testing the trunk on Hbase 0.20.1, and at the moment I am having ZooKeeper configuration issues.  Once I work these out, I'll be updating the new dependency list which will include the zookeeper jar.  Wish me luck! :)  Feel free to download the hbase-wrtier-0.20.0-SNAPSHOT jar from the archive repository manager.  When it is fully tested and working, I will release 0.20.
