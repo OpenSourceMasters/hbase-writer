@@ -28,7 +28,7 @@ In turn, these tables are directly supported by the Map/Reduce framework via HBa
 = GETTING STARTED = 
 
 HBase-Writer now supports Heritrix 2 and 3. Please refer to the corresponding
-README-Heritrix*.txt files for specific instructions.
+READMEHeritrix*.txt files for specific instructions.
 
 http://code.google.com/p/hbase-writer/wiki/READMEHeritrix2
 
