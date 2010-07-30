@@ -14,13 +14,18 @@ HBase-Writer version you downloaded is meant to work with
 Heritrix 2.
 
 
-
 = TABLE OF CONTENTS = 
+
 * SETUP
+
 * CONFIGURING HERITRIX
+
 * FILE FORMAT
+
 * COMPILING THE SOURCE
+
 * BUILDING THE JAR
+
 * BUILDING THE SITE-REPORT
 
 The hbase-writer is an extension to the Heritrix open
@@ -96,9 +101,13 @@ process-only-new-records
 The hbase-writer-x.x.x.jar should be in the target/ directory.  
 You can get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory.
 For example:
+
   cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.20.1/hbase-0.20.1.jar ${HERITRIX_HOME}/lib/
+
   cp ${HOME}/.m2/repository/org/apache/hadoop/zookeeper/3.2.1/zookeeper-3.2.1.jar ${HERITRIX_HOME}/lib/
+
   cp ${HOME}/.m2/repository/org/apache/hadoop/hadoop-core/0.20.1/hadoop-core-0.20.1.jar ${HERITRIX_HOME}/lib/ 
+
   cp ${HOME}/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15.jar ${HERITRIX_HOME}/lib/
   
 = UPGRADING TO NEW HADOOP/HBASE/HERITRIX VERSIONS = 
