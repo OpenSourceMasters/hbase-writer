@@ -1,5 +1,10 @@
 #labels Phase-QA
 
+===October 18th, 2009===
+HBase-Writer 0.20.3 has now been released.  Thanks to the patch sent in by Joost Ouwerkerk, a major bug was discovered and fixed; the issue was that replayInputStream was not being closed properly after hbase writer wrote the raw content to the hbase table.  As a result, there was a steady growing number of open stream objects in memory as the crawler ran.  This has been fixed by manually forcing a close of the stream object.  Thanks again Joost!
+
+===October 14th 2009===
+HBase-Writer 0.20.2 has now been released.  A new runtime jar dependency has been added: zookeeper.jar.  This is because HBase 0.20.X now depends on the Zookeeper service layer to manage the connections to the HBase master.  This change is significant for the client side because you no longer require the HBase master address to access your HBase tables, but instead you need the list of hosts serving in the zookeeper quorum.  The new input is now a comma-separated list of these zk quorum hosts in the global sheet for the HBaseWriter Processor configuration.  These zk hosts are analogous to the values set for the  "hbase.zookeeper.quorum" property in hbase-site.xml.  I have also added support for the hbase property: "hbase.zookeeper.property.clientPort" if you happen to run your zk quorum on a non-standard port.  Enjoy.
 
 ===October 13th 2009===
 Upgraded and now testing the trunk on Hbase 0.20.1, and at the moment I am having ZooKeeper configuration issues.  Once I work these out, I'll be updating the new dependency list which will include the zookeeper jar.  Wish me luck! :)  Feel free to download the hbase-wrtier-0.20.0-SNAPSHOT jar from the archive repository manager.  When it is fully tested and working, I will release 0.20.
