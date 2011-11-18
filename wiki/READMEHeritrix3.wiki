@@ -63,7 +63,7 @@ This facilitates running high-speed, distributed computations over content crawl
 
 Add the following beans to the disposition chain of your job configuration:
 
----
+{{{
 <!-- DISPOSITION CHAIN -->
 <bean id="hbaseParameterSettings" class="org.archive.io.hbase.HBaseParameters">
 	<property name="contentColumnFamily" value="newcontent" />
@@ -90,6 +90,7 @@ Add the following beans to the disposition chain of your job configuration:
 	</list>
 	</property>
 </bean>
+}}}
 With the following configurable properties:
 
 org.archive.modules.writer.HBaseWriterProcessor properties:
