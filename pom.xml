@@ -64,7 +64,7 @@
 
 	<ciManagement>
 		<system>hudson</system>
-		<url>http://repo1.opensourcemasters.com:8188/hudson</url>
+		<url>http://repo1.opensourcemasters.com:8188/hudson-2.1.2/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
@@ -73,7 +73,7 @@
 				<sendOnSuccess>false</sendOnSuccess>
 				<sendOnWarning>true</sendOnWarning>
 				<configuration>
-					<recipients>rsmith@opensoucemasters.com</recipients>
+					<recipients>hudson-hbasewriter@opensoucemasters.org</recipients>
 				</configuration>
 			</notifier>
 		</notifiers>
@@ -502,8 +502,7 @@
 
 		<!-- End of HBase dependencies -->
 
-		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
-			missing. -->
+		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are missing. -->
 		<springframework.version>3.0.5.RELEASE</springframework.version>
 
 		<heritrix.version>3.1.0</heritrix.version>
