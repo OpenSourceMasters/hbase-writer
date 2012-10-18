@@ -524,8 +524,8 @@
 		<compileSource>1.5</compileSource>
 
 		<!-- HBase dependencies -->
-		<hadoop.version>1.0.2</hadoop.version>
-		<hbase.version>0.94.0</hbase.version>
+		<hadoop.version>1.0.3</hadoop.version>
+		<hbase.version>0.94.2</hbase.version>
 		<zookeeper.version>3.4.3</zookeeper.version>
 		<log4j.version>1.2.16</log4j.version>
 		<slf4j.version>1.5.8</slf4j.version>
