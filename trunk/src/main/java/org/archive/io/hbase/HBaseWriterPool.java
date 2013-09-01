@@ -550,7 +550,7 @@ public class HBaseWriterPool extends WriterPool {
 		try {
 			return new HBaseWriter(getSerialNo(), getSettings(), _parameters);
 		} catch (IOException e) {
-			throw new RuntimeException("Couldn't create a " + HBaseWriter.class.getName() + " writer object");
+			throw new RuntimeException("Couldn't create a " + HBaseWriter.class.getName() + " writer object", e);
 		}
 	}
 
