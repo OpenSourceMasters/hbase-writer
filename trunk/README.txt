@@ -42,7 +42,7 @@ http://code.google.com/p/hbase-writer/wiki/READMEHeritrix2
   mvn clean package
 
 The hbase-writer-x.x.x.jar should be in the target/ directory.  
-You can get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory.
+You can get the hadoop, hbase and log4j dependency jars from your ${HOME}/.m2/repository/ directory or from ${HBASE_HOME}/lib.
 For example:
   cp ${HOME}/.m2/repository/org/apache/hadoop/hbase/0.20.1/hbase-0.20.1.jar ${HERITRIX_HOME}/lib/
   cp ${HOME}/.m2/repository/org/apache/hadoop/zookeeper/3.2.1/zookeeper-3.2.1.jar ${HERITRIX_HOME}/lib/
@@ -61,10 +61,10 @@ A sample settings.xml file:
 	<profile>
 	  <id>myBuild</id>
 	  <properties>
-            <heritrix.version>3.1.0</heritrix.version>
-            <hbase.version>0.90.5</hbase.version>
-            <hadoop.version>0.20.205.0</hadoop.version>
-            <zookeeper.version>3.3.2</zookeeper.version>
+            <heritrix.version>3.1.1</heritrix.version>
+            <hbase.version>0.95.2</hbase.version>
+            <hadoop.version>1.1.2</hadoop.version>
+            <zookeeper.version>3.4.5</zookeeper.version>
 	  </properties>
 	</profile>
   </profiles>
