@@ -1,6 +1,11 @@
 HBase-Writer Change Log
 
-Current /trunk - Compatible with hadoop-core-0.20.205.0, hbase-0.90.3 & heritrix 3.1.0
+Current /trunk - Compatible with hadoop-core-1.1.2, hbase-0.95.2 & heritrix 3.1.1
+
+Release 0.94.0 - 1.9.2013
+	1. Upgraded to latest release version of HBase and all dependencies.
+	2. Fixed exception handling bug in makeWriter() method.  Now exceptions are being properly logged.
+	3. Updated README docs to include the new dependencies that need to be copied over to ${HERITRIX_HOME}/lib
 
 Release 0.90.4 - 23.1.2012
 	1. Added support to change max file size.

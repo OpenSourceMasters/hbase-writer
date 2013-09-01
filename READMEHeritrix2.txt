@@ -13,8 +13,8 @@ HBase-Writer version you downloaded is meant to work with
 Heritrix 2.
 
 
-
-= TABLE OF CONTENTS = 
+= TABLE OF CONTENTS =
+ 
 * SETUP
 * CONFIGURING HERITRIX
 * FILE FORMAT
@@ -38,17 +38,29 @@ This facilitates running high-speed, distributed computations over content crawl
 
 2. Install heritrix-2.x.x
 
-3. Copy the following jar files into the ${HERITRIX_HOME}/lib directory:
+3. Copy the following jar files into the ${HERITRIX_HOME}/lib directory from ${HBASE_HOME}/lib:
 
   hbase-writer-x.x.x.jar
-
+  
   hbase-x.x.x.jar
-
+  
   zookeeper-x.x.x.jar
-
+  
   hadoop-x.x.x-core.jar
-
+  
   log4j-x.x.x.jar
+  
+  protobuf-java-x.x.x.jar 
+  
+  commons-configuration-x.x.x.jar 
+
+  hbase-protocol-x.x.x-hadoopX.jar 
+  
+  slf4j-api-x.x.x.jar
+  
+  htrace-core-x.x.x.jar
+
+  jackson-core-asl-x.x.x.jar 
 
 4. Start Heritrix
 
