@@ -5,9 +5,9 @@
 	<groupId>org.archive</groupId>
 	<artifactId>hbase-writer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.94.0-RELEASE</version>
+	<version>0.94.1-SNAPSHOT</version>
 	<name>HBase Writer</name>
-	<description>A library for writing Heritrix3 output directly to an HBase table as records.</description>
+	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
 	<url>http://code.google.com/p/hbase-writer</url>
 
 	<inceptionYear>2007</inceptionYear>
