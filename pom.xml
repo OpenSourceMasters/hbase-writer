@@ -64,7 +64,7 @@
 
 	<ciManagement>
 		<system>hudson</system>
-		<url>http://repo1.opensourcemasters.com:8188/hudson-2.1.2/</url>
+		<url>http://repo1.opensourcemasters.com:8188/hudson/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
@@ -425,6 +425,24 @@
 				</configuration>
 			</plugin>
 
+<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${assembly.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 
 		</plugins>
 	</build>
