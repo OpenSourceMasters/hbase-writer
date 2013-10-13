@@ -517,6 +517,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Keying;
 import org.apache.log4j.Logger;
 import org.archive.io.ReplayInputStream;
+import org.archive.io.WriterPool;
 import org.archive.io.hbase.HBaseParameters;
 import org.archive.io.hbase.HBaseWriter;
 import org.archive.io.hbase.HBaseWriterPool;
@@ -592,10 +593,10 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * @return the hbase parameters
 	 */
 	public synchronized HBaseParameters getHbaseParameters() {
-		if (hbaseParameters == null)
+		if (this.hbaseParameters == null) {
 			this.hbaseParameters = new HBaseParameters();
-
-		return hbaseParameters;
+		}
+		return this.hbaseParameters;
 	}
 
 	/**
@@ -614,19 +615,20 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	@Override
 	long getDefaultMaxFileSize() {
-		if (hbaseParameters != null) {
-			return (hbaseParameters.getDefaultMaxFileSizeInBytes());			
+		if (this.hbaseParameters != null) {
+			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
 		} 
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.archive.modules.writer.WriterPoolProcessor#setupPool(java.util.concurrent.atomic.AtomicInteger)
-	 */
+	
 	@Override
 	protected void setupPool(AtomicInteger serial) {
 		// allow the Heritrix WriterPoolProcessor framework to create new HBaseWriterPools as needed.
-		setPool(new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), hbaseParameters));
+		setPool(generateWriterPool(serial));
+	}
+	
+	protected WriterPool generateWriterPool(AtomicInteger serial) {
+		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), this.hbaseParameters);
 	}
 
 	/* (non-Javadoc)
@@ -733,7 +735,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		// get the writer from the pool
 		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
 		// get the client from the writer
-		HTable hbaseTable = hbaseWriter.getClient();
+		HTable hbaseTable = hbaseWriter.getHTable();
 		// Here we can generate the rowkey for this uri ...
 		String url = curi.toString();
 		String row = Keying.createKey(url);

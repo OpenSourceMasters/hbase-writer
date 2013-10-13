@@ -595,12 +595,12 @@ public class HBaseParameters implements ArchiveFileConstants {
 	/** The Constant REQUEST_COLUMN_NAME. */
 	public static final String REQUEST_COLUMN_NAME = "request";
 	
-	/** The Constant DEFAULT_MAX_FILE_SIZE_IN_BYTES. */
-	public static final long DEFAULT_MAX_FILE_SIZE_IN_BYTES = (long)(20 * 1024 * 1024);
+	/** The Constant DEFAULT_MAX_FILE_SIZE_IN_BYTES. (20 MB) */
+	public static final long DEFAULT_MAX_FILE_SIZE_IN_BYTES = Long.valueOf(20 * 1024 * 1024).longValue();
 
 	// the zk client port name, this has to match what is in hbase-site.xml for
 	// the clientPort config attribute.
-	/** The ZOOKEEPE r_ clien t_ port. */
+	/** The ZOOKEEPER client port. */
 	public static final String ZOOKEEPER_CLIENT_PORT = "hbase.zookeeper.property.clientPort";
 
 	/** ACTUAL OPTIONS INITIALIZED TO DEFAULTS *. */
