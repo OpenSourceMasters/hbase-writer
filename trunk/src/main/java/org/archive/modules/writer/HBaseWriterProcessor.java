@@ -581,7 +581,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	private static final Logger log = Logger.getLogger(HBaseWriterProcessor.class);
 
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 7019522841438703184L;
+	public static final long serialVersionUID = 7019522841438703184L;
 
 	/** The hbase parameters. @see org.archive.io.hbase.HBaseParameters */
 	HBaseParameters hbaseParameters = null;
