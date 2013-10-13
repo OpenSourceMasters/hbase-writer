@@ -718,7 +718,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	protected void processContent(Put put, ReplayInputStream replayInputStream, int streamSize) throws IOException {
+	protected void processContent(final CrawlURI curi, final String ip, Put put, ReplayInputStream replayInputStream, int streamSize) throws IOException {
 		// Below is just an example of a typical use case of overriding this
 		// method.
 		// I.E.: The goal below is to process the raw content array and parse it
@@ -815,7 +815,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			replayInputStream.setToResponseBodyStart();
 
 			// process the content (optional)
-			processContent(batchPut, replayInputStream, (int) recordingInputStream.getSize());
+			processContent(curi, ip, batchPut, replayInputStream, (int) recordingInputStream.getSize());
 
 			// TODO: add an option to manually set the timestamp value of the
 			// batchPut object
