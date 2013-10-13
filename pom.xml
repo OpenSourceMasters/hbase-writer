@@ -567,11 +567,11 @@
 
 	<properties>
 		<!-- Project variables -->
-		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8081/nexus/content/groups/public</hbase-writer.repository-manager.releases>
-		<hbase-writer.repository-manager.snapshots>http://repo1.opensourcemasters.org:8081/nexus/content/groups/public-snapshots</hbase-writer.repository-manager.snapshots>
+		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8188/nexus/content/groups/public</hbase-writer.repository-manager.releases>
+		<hbase-writer.repository-manager.snapshots>http://repo1.opensourcemasters.org:8188/nexus/content/groups/public</hbase-writer.repository-manager.snapshots>
 
-		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8081/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
-		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8081/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
+		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8188/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
+		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8188/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
 		<!-- Output for site files -->
 		<hbase-writer.distribution-manager.report-site>${user.home}/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
 		<!-- End of Project variables -->

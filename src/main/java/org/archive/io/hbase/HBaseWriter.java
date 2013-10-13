@@ -611,56 +611,63 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 */
 	protected void initializeCrawlTable(final Configuration hbaseConfiguration, final String hbaseTableName) throws IOException {
 		// an HBase admin object to manage hbase tables.
-		HBaseAdmin hbaseAdmin = new HBaseAdmin(hbaseConfiguration);
-
-		if (hbaseAdmin.tableExists(hbaseTableName)) {
-			boolean foundContentColumnFamily = false;
-			boolean foundCURIColumnFamily = false;
-
-			log.info("Checking table: " + hbaseTableName + " for structure...");
-
-			// Check the existing table and manipulate it if necessary
-			// to conform to the pre-existing table schema.
-			HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
-			for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
-				if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseOptions().getContentColumnFamily())) {
-					foundContentColumnFamily = true;
-				} else if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseOptions().getCuriColumnFamily())) {
-					foundCURIColumnFamily = true;
+		HBaseAdmin hbaseAdmin = null;
+		
+		try {
+			hbaseAdmin = new HBaseAdmin(hbaseConfiguration);
+			if (hbaseAdmin.tableExists(hbaseTableName)) {
+				boolean foundContentColumnFamily = false;
+				boolean foundCURIColumnFamily = false;
+	
+				log.info("Checking table: " + hbaseTableName + " for structure...");
+	
+				// Check the existing table and manipulate it if necessary
+				// to conform to the pre-existing table schema.
+				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
+				for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
+					if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseOptions().getContentColumnFamily())) {
+						foundContentColumnFamily = true;
+					} else if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseOptions().getCuriColumnFamily())) {
+						foundCURIColumnFamily = true;
+					}
 				}
+	
+				// modify the table if it's missing any of the column families.
+				if (!foundContentColumnFamily || !foundCURIColumnFamily) {
+					log.info("Disabling table: " + hbaseTableName);
+					hbaseAdmin.disableTable(hbaseTableName);
+	
+					if (!foundContentColumnFamily) {
+						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseOptions().getContentColumnFamily());
+						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getContentColumnFamily()));
+					}
+	
+					if (!foundCURIColumnFamily) {
+						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseOptions().getCuriColumnFamily());
+						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getCuriColumnFamily()));
+					}
+	
+					hbaseAdmin.modifyTable(Bytes.toBytes(hbaseTableName), existingHBaseTable);
+	
+					log.info("Enabling table: " + hbaseTableName);
+					hbaseAdmin.enableTable(hbaseTableName);
+				}
+				log.info("Done checking table: " + hbaseTableName);
+			} else {
+				// create a new hbase table
+				log.info("Creating table " + hbaseTableName);
+				HTableDescriptor newHBaseTable = new HTableDescriptor(hbaseTableName);
+				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getContentColumnFamily()));
+				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getCuriColumnFamily()));
+	
+				// create the table
+				hbaseAdmin.createTable(newHBaseTable);
+				log.info("Created table " + newHBaseTable.toString());
 			}
-
-			// modify the table if it's missing any of the column families.
-			if (!foundContentColumnFamily || !foundCURIColumnFamily) {
-				log.info("Disabling table: " + hbaseTableName);
-				hbaseAdmin.disableTable(hbaseTableName);
-
-				if (!foundContentColumnFamily) {
-					log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseOptions().getContentColumnFamily());
-					existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getContentColumnFamily()));
-				}
-
-				if (!foundCURIColumnFamily) {
-					log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseOptions().getCuriColumnFamily());
-					existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getCuriColumnFamily()));
-				}
-
-				hbaseAdmin.modifyTable(Bytes.toBytes(hbaseTableName), existingHBaseTable);
-
-				log.info("Enabling table: " + hbaseTableName);
-				hbaseAdmin.enableTable(hbaseTableName);
+		} finally {
+			if (hbaseAdmin != null) {
+				hbaseAdmin.close();
 			}
-			log.info("Done checking table: " + hbaseTableName);
-		} else {
-			// create a new hbase table
-			log.info("Creating table " + hbaseTableName);
-			HTableDescriptor newHBaseTable = new HTableDescriptor(hbaseTableName);
-			newHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getContentColumnFamily()));
-			newHBaseTable.addFamily(new HColumnDescriptor(getHbaseOptions().getCuriColumnFamily()));
-
-			// create the table
-			hbaseAdmin.createTable(newHBaseTable);
-			log.info("Created table " + newHBaseTable.toString());
 		}
 	}
 
