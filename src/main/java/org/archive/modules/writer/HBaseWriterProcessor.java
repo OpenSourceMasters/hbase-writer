@@ -514,13 +514,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Keying;
 import org.apache.log4j.Logger;
 import org.archive.io.ReplayInputStream;
 import org.archive.io.WriterPool;
 import org.archive.io.hbase.HBaseParameters;
 import org.archive.io.hbase.HBaseWriter;
 import org.archive.io.hbase.HBaseWriterPool;
+import org.archive.io.hbase.Keying;
 import org.archive.io.warc.WARCWriterPoolSettings;
 import org.archive.modules.CrawlURI;
 import org.archive.modules.ProcessResult;
@@ -614,7 +614,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * @return the default max file size
 	 */
 	@Override
-	long getDefaultMaxFileSize() {
+	public long getDefaultMaxFileSize() {
 		if (this.hbaseParameters != null) {
 			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
 		} 
@@ -811,7 +811,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * @return the default store paths
 	 */
 	@Override
-	List<ConfigPath> getDefaultStorePaths() {
+	public List<ConfigPath> getDefaultStorePaths() {
 		return null;
 	}
 
