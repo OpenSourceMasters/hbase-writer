@@ -518,11 +518,11 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Keying;
 import org.apache.hadoop.io.IOUtils;
 import org.archive.io.RecordingInputStream;
 import org.archive.io.RecordingOutputStream;
@@ -544,7 +544,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	Logger log = Logger.getLogger(HBaseWriter.class.getName());
 	
 	/** The hbase options. */
-	private HBaseParameters hbaseParameters;
+	private final HBaseParameters hbaseParameters;
 	
 	/** The client. */
 	private final HTable hTable;
@@ -624,6 +624,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 				// Check the existing table and manipulate it if necessary
 				// to conform to the pre-existing table schema.
 				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
+
 				for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
 					if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseParameters().getContentColumnFamily())) {
 						foundContentColumnFamily = true;
@@ -656,7 +657,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			} else {
 				// create a new hbase table
 				log.info("Creating table: " + hbaseTableName);
-				HTableDescriptor newHBaseTable = new HTableDescriptor(hbaseTableName);
+				HTableDescriptor newHBaseTable = new HTableDescriptor(TableName.valueOf(HBaseParameters.defaultHbaseTableNameSpace, hbaseTableName));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
 	

@@ -506,8 +506,6 @@ That's all there is to it!
 
 package org.archive.io.hbase;
 
-import org.archive.io.ArchiveFileConstants;
-
 import com.google.common.base.Preconditions;
 
 // TODO: Auto-generated Javadoc
@@ -561,10 +559,12 @@ import com.google.common.base.Preconditions;
  *      example
  * 
  */
-public class HBaseParameters implements ArchiveFileConstants {
+public class HBaseParameters {
 
 	/** DEFAULT OPTIONS *. */
 	public static final int ZK_PORT = 2181;
+
+	public static final String defaultHbaseTableNameSpace = "";
 
 	// "content" column family and qualifiers
 	/** The Constant CONTENT_COLUMN_FAMILY. */
