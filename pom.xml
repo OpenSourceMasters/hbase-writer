@@ -463,7 +463,7 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${assembly.plugin.version}</version>
+				<version>${plugin.build.assembly.version}</version>
 				<executions>
 					<execution>
 						<id>make-assembly</id>
