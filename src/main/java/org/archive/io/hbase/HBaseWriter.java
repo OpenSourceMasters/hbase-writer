@@ -672,6 +672,14 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 	}
 
+	public static String createRowKeyFromUrl(String url) {
+		return Keying.createKey(url);
+	}
+
+	public static String createUrlFromRowKey(String rowKey) {
+		return Keying.keyToUri(rowKey);
+	}
+
 	/**
 	 * Read the ReplayInputStream and write it to the given BatchUpdate with the
 	 * given column.
@@ -757,7 +765,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		String url = curi.toString();
 
 		// create the hbase friendly rowkey
-		String rowKey = Keying.createKey(url);
+		String rowKey = createRowKeyFromUrl(url);
 		if (log.isLoggable(Level.FINE)) {
 			log.log(Level.FINE, "Writing " + url + " as " + rowKey);
 		}

@@ -671,6 +671,8 @@ public class HBaseParameters {
 	 */
 	private boolean onlyProcessNewRecords = false;
 
+	private boolean writeRowKeyAlways = true;
+
 	/**
 	 * Gets the zk quorum.
 	 *
@@ -987,5 +989,13 @@ public class HBaseParameters {
 	 */
 	public void setDefaultMaxFileSizeInBytes(long defaultMaxFileSizeInBytes) {
 		this.defaultMaxFileSizeInBytes = defaultMaxFileSizeInBytes;
+	}
+
+	public boolean isWriteRowKeyAlways() {
+		return writeRowKeyAlways;
+	}
+
+	public void setWriteRowKeyAlways(boolean writeRowKeyAlways) {
+		this.writeRowKeyAlways = writeRowKeyAlways;
 	}
 }
