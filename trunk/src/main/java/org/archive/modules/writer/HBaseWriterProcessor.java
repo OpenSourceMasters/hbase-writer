@@ -587,7 +587,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 	/**
 	 * Gets the hbase parameters.
-	 * 
+	 *
 	 * @return the hbase parameters
 	 */
 	public synchronized HBaseParameters getHbaseParameters() {
@@ -599,9 +599,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 	/**
 	 * Sets the hbase parameters.
-	 * 
-	 * @param options
-	 *            the new hbase parameters
+	 *
+	 * @param options the new hbase parameters
 	 */
 	public void setHbaseParameters(HBaseParameters options) {
 		this.hbaseParameters = options;
@@ -609,28 +608,30 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 	/**
 	 * Gets the default max file size.
-	 * 
+	 *
 	 * @return the default max file size
 	 */
 	@Override
 	public long getDefaultMaxFileSize() {
 		if (this.hbaseParameters != null) {
-			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());
-		}
+			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
+		} 
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
-
+	
 	@Override
 	protected void setupPool(AtomicInteger serial) {
-		// allow the Heritrix WriterPoolProcessor framework to create new
-		// HBaseWriterPools as needed.
+		// allow the Heritrix WriterPoolProcessor framework to create new HBaseWriterPools as needed.
 		setPool(generateWriterPool(serial));
 	}
-
+	
 	protected WriterPool generateWriterPool(AtomicInteger serial) {
 		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), this.hbaseParameters);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.archive.modules.writer.WriterPoolProcessor#innerProcessResult(org.archive.modules.CrawlURI)
+	 */
 	@Override
 	protected ProcessResult innerProcessResult(CrawlURI uri) {
 		CrawlURI curi = uri;
@@ -639,12 +640,6 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		try {
 			if (shouldWrite(curi)) {
 				return write(curi, recordLength, false);
-			} else {
-				if (getHbaseParameters().isWriteRowKeyAlways()) {
-					return write(curi, recordLength, true);
-				} else {
-					log.info("Does not write content for: " + curi.toString());
-				}
 			}
 		} catch (IOException e) {
 			curi.getNonFatalFailures().add(e);
@@ -664,8 +659,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	@Override
 	protected boolean shouldProcess(CrawlURI curi) {
-		// The super method is still checked, but only continue with
-		// process checking if it returns true. This way the super class
+		// The super method is still checked, but only continue with 
+		// process checking if it returns true.  This way the super class
 		// overrides our checking.
 		if (!super.shouldProcess(curi)) {
 			return false;
@@ -686,6 +681,15 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		return true;
 	}
 
+	/**
+	 * Whether the given CrawlURI should be written to archive files. Annotates
+	 * CrawlURI with a reason for any negative answer.
+	 * 
+	 * @param curi
+	 *            CrawlURI
+	 * 
+	 * @return true if URI should be written; false otherwise
+	 */
 	@Override
 	protected boolean shouldWrite(CrawlURI curi) {
 		// The old method is still checked, but only continue with the next
@@ -723,12 +727,10 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	/**
 	 * Determine if the given uri exists as a rowkey in the configured hbase
 	 * table.
-	 * 
-	 * @param curi
-	 *            the curi
+	 *
+	 * @param curi the curi
 	 * @return true, if checks if is record new
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private boolean isRecordNew(CrawlURI curi) throws IOException {
 		// get the writer from the pool
@@ -738,8 +740,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		// Here we can generate the rowkey for this uri ...
 		String url = curi.toString();
 		String row = HBaseWriter.createRowKeyFromUrl(url);
-		// Default is true since we check for conditions to determine if the row
-		// key already exists.
+		// Default is true since we check for conditions to determine if the row key already exists.
 		boolean isNew = true;
 		try {
 			// and look it up to see if it already exists...
@@ -764,24 +765,30 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 				isNew = false;
 			}
 		}
-		// if we are here then the row key must be new (it does not exist),
-		// so its a new record, isNew should still be set to "true" at this
-		// point.
+		// if we are here then the row key must be new  (it does not exist), 
+		// so its a new record, isNew should still be set to "true" at this point.
 		if (log.isDebugEnabled()) {
-			log.debug("Found A NEW Record - Url: " + url + " has no existing rowkey: " + row);
+			log.debug("Found A NEW Record - Url: " + url + " has no existing rowkey: " + row );
 		}
 		return isNew;
 	}
 
 	/**
+	 * Write to HBase.
 	 * 
 	 * @param curi
+	 *            the curi
 	 * @param recordLength
-	 * @param shouldNotWriteContent
-	 * @return
+	 *            the record length
+	 * @param in
+	 *            the in
+	 * 
+	 * @return the process result
+	 * 
 	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
-	protected ProcessResult write(final CrawlURI curi, long recordLength, boolean shouldNotWriteContent) throws IOException {
+	protected ProcessResult write(final CrawlURI curi, long recordLength, boolean doNotWriteContent) throws IOException {
 		// grab the writer from the pool
 		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
 		// get the member position for logging Total Bytes Written
@@ -801,7 +808,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 	/**
 	 * Gets the default store paths.
-	 * 
+	 *
 	 * @return the default store paths
 	 */
 	@Override
@@ -809,9 +816,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.archive.modules.writer.WriterPoolProcessor#getMetadata()
 	 */
 	@Override
@@ -819,9 +824,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.archive.io.warc.WARCWriterPoolSettings#getRecordIDGenerator()
 	 */
 	@Override
