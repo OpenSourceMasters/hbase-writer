@@ -513,6 +513,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -541,17 +542,17 @@ import com.google.common.base.Preconditions;
 public class HBaseWriter extends WriterPoolMember implements Serializer {
 
 	/** The log. */
-	Logger log = Logger.getLogger(HBaseWriter.class.getName());
-	
+	private static Logger log = Logger.getLogger(HBaseWriter.class.getName());
+
 	/** The hbase options. */
 	private final HBaseParameters hbaseParameters;
-	
+
 	/** The client. */
 	private final HTable hTable;
 
 	/**
 	 * Gets the hbase options.
-	 *
+	 * 
 	 * @return the hbase options
 	 * @see org.archive.io.hbase.HBaseParameters
 	 */
@@ -567,14 +568,18 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	public HTable getHTable() {
 		return hTable;
 	}
-	
+
 	/**
 	 * Instantiates a new h base writer.
-	 *
-	 * @param serialNo the serial no
-	 * @param settings the settings
-	 * @param parameters the parameters
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * 
+	 * @param serialNo
+	 *            the serial no
+	 * @param settings
+	 *            the settings
+	 * @param parameters
+	 *            the parameters
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public HBaseWriter(AtomicInteger serialNo, final WriterPoolSettings settings, HBaseParameters parameters) throws IOException {
 		// Instantiates a new HBaseWriter for the WriterPool to use in heritrix.
@@ -596,6 +601,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		// create a crawl table
 		initializeCrawlTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
 		this.hTable = new HTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
+
 	}
 
 	/**
@@ -612,19 +618,18 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	protected void initializeCrawlTable(final Configuration hbaseConfiguration, final String hbaseTableName) throws IOException {
 		// an HBase admin object to manage hbase tables.
 		HBaseAdmin hbaseAdmin = null;
-		
+
 		try {
 			hbaseAdmin = new HBaseAdmin(hbaseConfiguration);
 			if (hbaseAdmin.tableExists(hbaseTableName)) {
 				boolean foundContentColumnFamily = false;
 				boolean foundCURIColumnFamily = false;
-	
+
 				log.info("Checking table: " + hbaseTableName + " for structure...");
-	
+
 				// Check the existing table and manipulate it if necessary
 				// to conform to the pre-existing table schema.
 				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
-
 				for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
 					if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseParameters().getContentColumnFamily())) {
 						foundContentColumnFamily = true;
@@ -632,24 +637,24 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 						foundCURIColumnFamily = true;
 					}
 				}
-	
+
 				// modify the table if it's missing any of the column families.
 				if (!foundContentColumnFamily || !foundCURIColumnFamily) {
 					log.info("Disabling table: " + hbaseTableName);
 					hbaseAdmin.disableTable(hbaseTableName);
-	
+
 					if (!foundContentColumnFamily) {
 						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseParameters().getContentColumnFamily());
 						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
 					}
-	
+
 					if (!foundCURIColumnFamily) {
 						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseParameters().getCuriColumnFamily());
 						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
 					}
-	
+
 					hbaseAdmin.modifyTable(Bytes.toBytes(hbaseTableName), existingHBaseTable);
-	
+
 					log.info("Enabling table: " + hbaseTableName);
 					hbaseAdmin.enableTable(hbaseTableName);
 				}
@@ -660,7 +665,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 				HTableDescriptor newHBaseTable = new HTableDescriptor(TableName.valueOf(HBaseParameters.defaultHbaseTableNameSpace, hbaseTableName));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
-	
+
 				// create the table
 				hbaseAdmin.createTable(newHBaseTable);
 				log.info("Created table: " + newHBaseTable.getNameAsString());
@@ -670,14 +675,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 				hbaseAdmin.close();
 			}
 		}
-	}
-
-	public static String createRowKeyFromUrl(String url) {
-		return Keying.createKey(url);
-	}
-
-	public static String createUrlFromRowKey(String rowKey) {
-		return Keying.keyToUri(rowKey);
 	}
 
 	/**
@@ -727,19 +724,12 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	protected void processContent(final CrawlURI curi, final String ip, Put put, ReplayInputStream replayInputStream, int streamSize) throws IOException {
-		// Below is just an example of a typical use case of overriding this
-		// method.
-		// I.E.: The goal below is to process the raw content array and parse it
-		// to a new byte array.....
-		// byte[] rowKey = put.getRow();
-		// byte[] rawContent =
-		// this.getByteArrayFromInputStream(replayInputStream, streamSize)
-		// // process rawContent and create output to store in new columns.
-		// byte[] someParsedByteArray =
-		// userDefinedMethondToProcessRawContent(rawContent);
-		// put.add(Bytes.toBytes("some_column_family"),
-		// Bytes.toBytes("a_new_column_name"), someParsedByteArray);
+	public static String createRowKeyFromUrl(String url) {
+		return Keying.createKey(url, Keying.REFERER_URL_SCHEME);
+	}
+
+	public static String createUrlFromRowKey(String rowKey) {
+		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME);
 	}
 
 	/**
@@ -758,8 +748,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public void write(final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream, final RecordingInputStream recordingInputStream)
-			throws IOException {
+	public void write(final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream, final RecordingInputStream recordingInputStream) throws IOException {
 
 		// generate the target url of the crawled document
 		String url = curi.toString();
@@ -777,39 +766,58 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 
 		// create an hbase updateable object (the put object)
 		// Constructor takes the rowkey as the only argument
-		Put batchPut = new Put(Bytes.toBytes(rowKey));
+		long currentTimestamp = System.currentTimeMillis();
+		Put batchPut = new Put(Bytes.toBytes(rowKey), currentTimestamp);
 
 		// write the target url to the url column
 		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getUrlColumnName()), curi.getFetchBeginTime(),
-				serialize(Bytes.toBytes(url)));
+		        serialize(Bytes.toBytes(url)));
 
 		// write the target ip to the ip column
 		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getIpColumnName()), curi.getFetchBeginTime(),
-				serialize(Bytes.toBytes(ip)));
+		        serialize(Bytes.toBytes(ip)));
 
 		// is the url part of the seed url (the initial url(s) used to start the
 		// crawl)
 		if (curi.isSeed()) {
 			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getIsSeedColumnName()),
-					serialize(Bytes.toBytes(Boolean.TRUE.booleanValue())));
+			        serialize(Bytes.toBytes(Boolean.TRUE.booleanValue())));
 
 			if (curi.getPathFromSeed() != null && curi.getPathFromSeed().trim().length() > 0) {
 				batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getPathFromSeedColumnName()),
-						serialize(Bytes.toBytes(curi.getPathFromSeed().trim())));
+				        serialize(Bytes.toBytes(curi.getPathFromSeed().trim())));
 			}
 		}
 
 		// write the Via string
 		String viaStr = (curi.getVia() != null) ? curi.getVia().toString().trim() : null;
 		if (viaStr != null && viaStr.length() > 0) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getViaColumnName()),
-					serialize(Bytes.toBytes(viaStr)));
+			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getViaColumnName()), serialize(Bytes.toBytes(viaStr)));
+		}
+
+		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentLengthColumnName()),
+		        Bytes.toBytes(String.valueOf(curi.getContentLength())));
+
+		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentSizeColumnName()),
+		        Bytes.toBytes(String.valueOf(curi.getContentSize())));
+
+		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchAttmptsColumnName()),
+		        Bytes.toBytes(String.valueOf(curi.getFetchAttempts())));
+
+		if (curi.getFetchDuration() > 0) {
+			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchDurationColumnName()),
+			        Bytes.toBytes(String.valueOf(curi.getFetchDuration())));
+		}
+
+		if (curi.getAnnotations() != null && curi.getAnnotations().size() > 0) {
+			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchAnnotationsColumnName()),
+			        Bytes.toBytes(StringUtils.join(curi.getAnnotations(), ", ")));
 		}
 
 		// Write the Crawl Request to the Put object
 		if (recordingOutputStream.getSize() > 0) {
 			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getRequestColumnName()),
-					serialize(getByteArrayFromInputStream(recordingOutputStream.getReplayInputStream(), (int) recordingOutputStream.getSize())));
+			        serialize(getByteArrayFromInputStream(recordingOutputStream.getReplayInputStream(), (int) recordingOutputStream.getSize())));
 		}
 
 		// Write the Crawl Response to the Put object
@@ -817,14 +825,16 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		try {
 			// add the raw content to the table record.
 			batchPut.add(Bytes.toBytes(getHbaseParameters().getContentColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentColumnName()),
-					serialize(getByteArrayFromInputStream(replayInputStream, (int) recordingInputStream.getSize())));
+			        serialize(getByteArrayFromInputStream(replayInputStream, (int) recordingInputStream.getSize())));
 
-			// reset the input steam for the content processor.
-			replayInputStream = recordingInputStream.getReplayInputStream();
-			replayInputStream.setToResponseBodyStart();
+			// write the added annotations
+			if (curi.getContentType() != null) {
+				batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentTypeColumnName()),
+				        Bytes.toBytes(String.valueOf(curi.getContentType())));
+			}
 
 			// process the content (optional)
-			processContent(curi, ip, batchPut, replayInputStream, (int) recordingInputStream.getSize());
+			processContent(curi, ip, batchPut, recordingInputStream);
 
 			// TODO: add an option to manually set the timestamp value of the
 			// batchPut object
@@ -838,7 +848,9 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.archive.io.hbase.Serializer#serialize(byte[])
 	 */
 	@Override
@@ -847,6 +859,33 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			return getHbaseParameters().getSerializer().serialize(bytes);
 		}
 		return bytes;
+	}
+
+	/**
+	 * This is a stub method and is here to allow extension/overriding for
+	 * custom content parsing, data manipulation and to populate new columns.
+	 * 
+	 * For Example : html parsing, text extraction, analysis and transformation
+	 * and storing the results in new column families/columns using the batch
+	 * update object. Or even saving the values in other custom hbase tables or
+	 * other remote data sources. (a.k.a. anything you want)
+	 * 
+	 * @param curi
+	 *            - This requested uri for this content
+	 * 
+	 * @param ip
+	 *            - the ip the host name in the uri resolves to
+	 * 
+	 * @param put
+	 *            the stateful put object containing all the row data to be
+	 *            written. This is the 'output' object.
+	 * 
+	 * @param rawContent
+	 *            - the rawContent fetched form the webserver a the given curi
+	 * @throws IOException
+	 */
+	protected void processContent(final CrawlURI curi, final String ip, Put put, RecordingInputStream recordingInputStream) throws IOException {
+		//
 	}
 
 }

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * @see Bytes#split(byte[], byte[], int)
  */
 public class Keying {
-	private static final String SCHEME = "r:";
+	public static final String REFERER_URL_SCHEME = "r:";
 	private static final Pattern URI_RE_PARSER = Pattern.compile("^([^:/?#]+://(?:[^/?#@]+@)?)([^:/?#]+)(.*)$");
 
 	/**
@@ -64,16 +64,17 @@ public class Keying {
 	 * @see #keyToUri(String)
 	 * @see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC2396</a>
 	 */
-	public static String createKey(final String u) {
-		if (u.startsWith(SCHEME)) {
-			throw new IllegalArgumentException("Starts with " + SCHEME);
+
+	public static String createKey(final String u, String scheme) {
+		if (scheme != null && scheme.length() > 0 && u.startsWith(scheme)) {
+			throw new IllegalArgumentException("Key already starts with a scheme: " + scheme);
 		}
 		Matcher m = getMatcher(u);
 		if (m == null || !m.matches()) {
 			// If no match, return original String.
 			return u;
 		}
-		return SCHEME + m.group(1) + reverseHostname(m.group(2)) + m.group(3);
+		return scheme + m.group(1) + reverseHostname(m.group(2)) + m.group(3);
 	}
 
 	/**
@@ -84,11 +85,11 @@ public class Keying {
 	 * @return 'Restored' URI made by reversing the {@link #createKey(String)}
 	 *         transform.
 	 */
-	public static String keyToUri(final String s) {
-		if (!s.startsWith(SCHEME)) {
+	public static String keyToUri(final String s, final String scheme) {
+		if (scheme != null && scheme.length() > 0 && !s.startsWith(scheme)) {
 			return s;
 		}
-		Matcher m = getMatcher(s.substring(SCHEME.length()));
+		Matcher m = getMatcher(s.substring(scheme.length()));
 		if (m == null || !m.matches()) {
 			// If no match, return original String.
 			return s;
@@ -103,7 +104,7 @@ public class Keying {
 		return URI_RE_PARSER.matcher(u);
 	}
 
-	private static String reverseHostname(final String hostname) {
+	public static String reverseHostname(final String hostname) {
 		if (hostname == null) {
 			return "";
 		}

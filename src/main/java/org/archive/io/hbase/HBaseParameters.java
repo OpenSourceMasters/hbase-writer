@@ -580,6 +580,18 @@ public class HBaseParameters {
 	/** The Constant IP_COLUMN_NAME. */
 	public static final String IP_COLUMN_NAME = "ip";
 	
+	public static final String CONTENT_TYPE_COLUMN_NAME = "ct";
+
+	public static final String CONTENT_SIZE_COLUMN_NAME = "cz";
+
+	public static final String CONTENT_LENGTH_COLUMN_NAME = "cl";
+
+	public static final String FETCH_ATTEMPTS_COLUMN_NAME = "fa";
+
+	public static final String FETCH_DURATION_COLUMN_NAME = "fd";
+
+	public static final String FETCH_ANNOTATIONS_COLUMN_NAME = "an";
+
 	/** The Constant PATH_FROM_SEED_COLUMN_NAME. */
 	public static final String PATH_FROM_SEED_COLUMN_NAME = "path-from-seed";
 	
@@ -624,6 +636,18 @@ public class HBaseParameters {
 	/** The ip column name. */
 	private String ipColumnName = IP_COLUMN_NAME;
 	
+	private String contentTypeColumnName = CONTENT_TYPE_COLUMN_NAME;
+
+	private String contentSizeColumnName = CONTENT_SIZE_COLUMN_NAME;
+
+	private final String contentLengthColumnName = CONTENT_LENGTH_COLUMN_NAME;
+
+	private String fetchAttmptsColumnName = FETCH_ATTEMPTS_COLUMN_NAME;
+
+	private String fetchDurationColumnName = FETCH_DURATION_COLUMN_NAME;
+
+	private String fetchAnnotationsColumnName = FETCH_ANNOTATIONS_COLUMN_NAME;
+
 	/** The path from seed column name. */
 	private String pathFromSeedColumnName = PATH_FROM_SEED_COLUMN_NAME;
 	
@@ -670,8 +694,6 @@ public class HBaseParameters {
 	 * HBase table.
 	 */
 	private boolean onlyProcessNewRecords = false;
-
-	private boolean writeRowKeyAlways = true;
 
 	/**
 	 * Gets the zk quorum.
@@ -991,11 +1013,48 @@ public class HBaseParameters {
 		this.defaultMaxFileSizeInBytes = defaultMaxFileSizeInBytes;
 	}
 
-	public boolean isWriteRowKeyAlways() {
-		return writeRowKeyAlways;
+	public String getContentTypeColumnName() {
+		return contentTypeColumnName;
 	}
 
-	public void setWriteRowKeyAlways(boolean writeRowKeyAlways) {
-		this.writeRowKeyAlways = writeRowKeyAlways;
+	public void setContentTypeColumnName(String contentTypeColumnName) {
+		this.contentTypeColumnName = contentTypeColumnName;
 	}
+
+	public String getContentSizeColumnName() {
+		return contentSizeColumnName;
+	}
+
+	public void setContentSizeColumnName(String contentSizeColumnName) {
+		this.contentSizeColumnName = contentSizeColumnName;
+	}
+
+	public String getFetchAttmptsColumnName() {
+		return fetchAttmptsColumnName;
+	}
+
+	public void setFetchAttmptsColumnName(String fetchAttmptsColumnName) {
+		this.fetchAttmptsColumnName = fetchAttmptsColumnName;
+	}
+
+	public String getFetchDurationColumnName() {
+		return fetchDurationColumnName;
+	}
+
+	public void setFetchDurationColumnName(String fetchDurationColumnName) {
+		this.fetchDurationColumnName = fetchDurationColumnName;
+	}
+
+	public String getFetchAnnotationsColumnName() {
+		return fetchAnnotationsColumnName;
+	}
+
+	public void setFetchAnnotationsColumnName(String fetchAnnotationsColumnName) {
+		this.fetchAnnotationsColumnName = fetchAnnotationsColumnName;
+	}
+
+	public String getContentLengthColumnName() {
+		return contentLengthColumnName;
+	}
+
 }
