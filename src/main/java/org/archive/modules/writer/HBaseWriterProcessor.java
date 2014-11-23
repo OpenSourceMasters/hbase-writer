@@ -659,9 +659,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	@Override
 	protected boolean shouldProcess(CrawlURI curi) {
-		// The super method is still checked, but only continue with 
-		// process checking if it returns true.  This way the super class
-		// overrides our checking.
+		// The super method is still checked, but we only continue with
+		// process checking if it returns true.
 		if (!super.shouldProcess(curi)) {
 			return false;
 		}
@@ -672,7 +671,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 			try {
 				return isRecordNew(curi);
 			} catch (IOException e) {
-				log.error("Failed write of Record: " + curi.toString(), e);
+				log.error("Failed determining to process uri rowkey: " + curi.toString(), e);
+				return false;
 			}
 		}
 
@@ -692,8 +692,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	@Override
 	protected boolean shouldWrite(CrawlURI curi) {
-		// The old method is still checked, but only continue with the next
-		// checks if it returns true.
+		// The super method is still checked first and overrides anything done
+		// in this method
 		if (!super.shouldWrite(curi)) {
 			return false;
 		}
@@ -717,7 +717,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 					return false;
 				}
 			} catch (IOException e) {
-				log.error("Failed to write a new record for rowKey: " + curi.toString() + " using pool: " + getPool().toString(), e);
+				log.error("Failed to determine if uri is a new record in the table. For uri rowKey: " + curi.toString() + " using pool: " + getPool().toString(), e);
 			}
 		}
 		// all tests pass, return true to write the content locally.
@@ -733,7 +733,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private boolean isRecordNew(CrawlURI curi) throws IOException {
-		// get the writer from the pool
+		// borrow the writer from the pool
 		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
 		// get the client from the writer
 		HTable hbaseTable = hbaseWriter.getHTable();
