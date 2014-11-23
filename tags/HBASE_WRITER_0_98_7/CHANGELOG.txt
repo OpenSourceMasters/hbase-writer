@@ -1,0 +1,81 @@
+HBase-Writer Change Log
+
+Current /trunk - Compatible with hadoop-core-2.4.0, hbase-0.98.7-hadoop & heritrix 3.2.0
+
+Release 0.98.7 - 23.11.2014
+	1. Added wrapper method so all data added to the put object gets serialized if a 
+		serializer is specified in the configurable parameters. Also ensuring both request 
+		and response streams are closed at the end of the write to the table. Both have 
+		the potential to be open if the custom method is used and streams are not closed, 
+		now this shouldn't be a problem.
+	2. Added bug fix to shouldProcess() method. If a record got an IOException, it was 
+		logging the record as an error but still trying to process the record. Now it returns 
+		false and the record wont be processed. Also updated comments.
+	
+	3. Logging heritrix annotations if any are encountered during the crawl.  For example if a fetched url has
+		data larger than the max size limit, no data will be written but an annotation "an:size" will get written 
+		now instead.
+		
+	4. Shortened the default table column names to be more reasonable. Added a configurable delimiter 
+		when annotations are present.
+		
+	5. Bug fixes, checking for null and allowing setter for column name variables.  Moving properties to top 
+		of pom.xml file.  Updating maven plugin versions to their latest versions.  Added support to use latest 
+		version of hadoop and hbase and heritrix dependencies. Now including a list of dependencies 
+		to make it easier to update heritrix lib dependencies.
+
+Release 0.94.0 - 1.9.2013
+	1. Upgraded to latest release version of HBase and all dependencies.
+	2. Fixed exception handling bug in makeWriter() method.  Now exceptions are being properly logged.
+	3. Updated README docs to include the new dependencies that need to be copied over to ${HERITRIX_HOME}/lib
+
+Release 0.90.4 - 23.1.2012
+	1. Added support to change max file size.
+	2. Major bug fix submitted by Greg Lu, all the usages of the connection pooling functionality built into Heritrix were not being used
+		and instead HBase-writer was creating a new HTable objects indirectly for every page being saved.  This has been fixed.
+		Even worse, the connections weren't being cleaned up properly and would stick around until the process was shut down.    
+		The connections are now being closed.  Thanks again to Greg Lu for the work done to fix this problem.
+		(Patch submitted by Greg Lu via Ryan Smith)
+	3. Moved all configuration options to HBaseParameters class and cleaned up naming.
+		(Patch submitted by Greg Lu via Ryan Smith)
+	4. HBaseWriterPool has been added back extending WriterPool from Heritrix, No longer using WARCWriterPool.
+		(Patch submitted by Greg Lu via Ryan Smith)
+
+Release 0.90.3 - 16.11.2011
+  8th Release - Compatible with hadoop-core-0.20.205.0, hbase-0.90.3 & heritrix 3.1.0
+	1. HBaseWriterPool.java has been removed as it is no longer used, now using WARCWriterPool from Heritrix.
+	2. Added few more unimplemented methods in HBaseWriterProcessor to meet new Heritrix 3.1.0 interface WARCWriterPoolSettings
+	3. Removed deprecated methods used in configuring Hbase and changed the way of accessing Hbase Admin.
+	(Patch submitted by Karthik MV via Ryan Smith)
+	4. Improved logging and error handling by logging the entire error stack when an exception is thrown.
+
+Release 0.9-SNAPSAHOT - 29.03.2010
+  7th Release - Compatible with hadoop-core-0.19, hbase-0.20.0 & heritrix 2.0.1
+	(Patch submitted by Greg Lu via Ryan Smith)
+
+Release 0.20.3 - 24.10.2009
+  6th Release - Compatible with hadoop-0.18.2, hbase-0.18.1 & heritrix 2.0.1
+	(Patch submitted by Joost Ouwerkerk via Ryan Smith)
+
+Release 0.19.1 - 24.10.2009
+  5th Release - Compatible with hadoop-0.18.2, hbase-0.18.1 & heritrix 2.0.1
+
+Release 0.19.0 - 24.10.2009
+  4th Release - Compatible with hadoop-0.18.2, hbase-0.18.1 & heritrix 2.0.1
+
+Release 0.18.2 - 03.12.2008   
+  3rd Release - Compatible with hadoop-0.18.2, hbase-0.18.1 & heritrix 2.0.1
+  ISSUE-6 - Adding maximum content size support.  If content items collected by heritrix exceed the hard-coded limit of 20MB, 
+  then the writer will ignore fetching this item.  This is to prevent HBase from hanging on large record writes.  
+  (Patch submitted by Andrew Purtell via Ryan Smith)
+
+  ISSUE-5 - If HBase throws an exception, the Hbase-Writer is not added back to the writer pool.  
+  (Patch submitted by Andrew Purtell via Ryan Smith)
+
+Release 0.18.1 - 24.10.2008   
+  2nd Release - Compatible with hadoop-0.18.1, hbase-0.18.1 & heritrix 2.0.1
+  
+Release 0.18.0 - 10.10.2008
+  Initial Release - Compatible with hadoop-0.18.0, hbase-0.18.0 & heritrix 2.0.1
+  
+ 
