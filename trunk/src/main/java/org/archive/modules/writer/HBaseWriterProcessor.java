@@ -835,7 +835,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * 
 	 * @throws IOException
 	 */
-	public void modifyPut(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream) throws IOException {
+	public void modifyPut(final HBaseParameters hBaseParameters, final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream,
+	        RecordingInputStream recordingInputStream) throws IOException {
 		// Both request and response streams are available in this method.
 		// NOTE: be sure to close your streams when you are done reading them.
 		boolean optional = false;
