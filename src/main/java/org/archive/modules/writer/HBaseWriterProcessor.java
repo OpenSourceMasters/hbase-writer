@@ -817,6 +817,9 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * update object. Or even saving the values in other custom hbase tables or
 	 * other remote data sources. (a.k.a. anything you want)
 	 * 
+	 * @param hbaseParameters
+	 *            - the configured hbase parameters for this crawl job
+	 * 
 	 * @param curi
 	 *            - This requested uri for this content
 	 * 
