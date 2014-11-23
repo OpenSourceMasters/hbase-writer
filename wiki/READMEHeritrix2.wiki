@@ -1,8 +1,8 @@
 #labels Phase-Implementation
-Welcome to HBase-Writer README for Heritrix 3.  
+Welcome to HBase-Writer README for Heritrix 2.  
 
 This document can also be found online here:
-http://code.google.com/p/hbase-writer/wiki/READMEHeritrix3
+http://code.google.com/p/hbase-writer/wiki/READMEHeritrix2
 
 Specific versions of HBase-Writer now support different
 version combinations of Heritrix and HBase. Please refer to
@@ -11,11 +11,11 @@ for a more detailed list.
 
 Before reading this document, please make sure the
 HBase-Writer version you downloaded is meant to work with
-Heritrix 3.
+Heritrix 2.
 
 
 = TABLE OF CONTENTS =
-
+ 
 * SETUP
 * CONFIGURING HERITRIX
 * FILE FORMAT
@@ -33,11 +33,11 @@ Having the crawled data in hbase tables is directly supported by the Map/Reduce 
 This facilitates running high-speed, distributed computations over content crawled with Heritrix.
 
 
-= QUICK SETUP =
+= QUICK SETUP = 
 
 1. Start an instance of hbase.
 
-2. Install heritrix-3.x.x
+2. Install heritrix-2.x.x
 
 3. Copy the following jar files into the ${HERITRIX_HOME}/lib directory from ${HBASE_HOME}/lib:
 
@@ -63,75 +63,17 @@ This facilitates running high-speed, distributed computations over content crawl
 
   jackson-core-asl-x.x.x.jar 
 
- 
 4. Start Heritrix
 
-= CONFIGURING HERITRIX =
 
-Add the following beans to the disposition chain of your job configuration:
+= CONFIGURING HERITRIX = 
 
----
-{{{
-<!-- DISPOSITION CHAIN -->
-<bean id="hbaseParameterSettings" class="org.archive.io.hbase.HBaseParameters">
-	<!-- Begin required settings -->
-	<property name="hbaseTableName" value="hbwriter-crawl" />
-	<!-- a comma separated list of host names --> 
-	<property name="zkQuorum" value="localhost" />
-	<!-- End required settings -->
-	
-	<!-- All other settings below are optional -->
-	<!-- This should reflect your installation, but 2181 is the default -->
-	<property name="zkPort" value="2181" />
-	<property name="onlyProcessNewRecords" value="false" />
-	<property name="onlyWriteNewRecords" value="false" />
-	
-	<!-- 25 * 1024 * 1024 = 26214400 bytes -->
-	<property name="defaultMaxFileSizeInBytes" value="26214400" />
-	
-	<property name="contentColumnFamily" value="n" />
-	<property name="curiColumnFamily" value="c" />
-	
-	<property name="contentColumnName" value="raw" />
-	
-	<property name="ipColumnName" value="ip" />
-	<property name="pathFromSeedColumnName" value="pfs" />
-	<property name="isSeedColumnName" value="is" />
-	<property name="viaColumnName" value="via" />
-	<property name="urlColumnName" value="url" />
-	<property name="requestColumnName" value="req" />
-	<property name="contentTypeColumnName" value="ct" />
-	<property name="contentSizeColumnName" value="cz" />
-	<property name="contentLengthColumnName" value="cl" />
-	<property name="fetchAttmptsColumnName" value="fa" />
-	<property name="fetchDurationColumnName" value="fd" />
-	<property name="fetchAnnotationsColumnName" value="an" />
-	<property name="fetchAnnotationsValueDelimiter" value=", " />
-	
-	<!-- Overwrite more options here -->
-</bean>
+On the "Settings for sheet 'global'":
 
-<bean id="hbaseWriterProcessor" class="org.archive.modules.writer.HBaseWriterProcessor">
-	<property name="hbaseParameters">
-		<ref bean="hbaseParameterSettings"/> 
-	</property>
-</bean>
-
-<bean id="dispositionProcessors" class="org.archive.modules.DispositionChain">
-	<property name="processors">
-		<list>
-			<ref bean="hbaseWriterProcessor"/>
-			<!-- other references -->
-		</list>
-	</property>
-</bean>
-}}}
----
-
-With the following configurable properties:
-
-org.archive.io.hbase.HBaseParameters properties:
-
+- Click on a 'details' link and add new processor com.powerset.heritrix.writer.HBaseWriterProcessor.
+- Return to the global sheet and set this as your writer (the page will not draw completely if
+did not type in the name of the processor properly -- see heritrix_out.log for errors).
+- Set at least the zkquorum and table configuration for HBaseWriterProcessor.
 	hbaseTableName (required)
 	  Which table in HBase to write the crawl to.  This table will be created automatically if it doesnt exist.
 	  e.g. crawl
@@ -205,4 +147,3 @@ org.archive.io.hbase.HBaseParameters properties:
 
 	fetchAnnotationsValueDelimiter (optional)
 		The column qualifier name for storing the request. Defaults to ", "
-			
