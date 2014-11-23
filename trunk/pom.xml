@@ -369,6 +369,26 @@
 				</excludes>
 			</resource>
 		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${plugin.build.assembly.version}</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>${plugin.build.antrun.version}</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${plugin.build.dependency.version}</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>${plugin.build.release.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<artifactId>maven-scm-plugin</artifactId>
@@ -377,6 +397,26 @@
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>${plugin.build.resources.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${plugin.build.clean.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${plugin.build.jar.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${plugin.build.deploy.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${plugin.build.resources.version}</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>${plugin.build.install.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-help-plugin</artifactId>
@@ -572,11 +612,6 @@
 				<version>${plugin.reporting.javancss.version}</version>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>clirr-maven-plugin</artifactId>
-				<version>${plugin.reporting.clirr.version}</version>
-			</plugin>
-			<plugin>
 				<artifactId>maven-changelog-plugin</artifactId>
 				<version>${plugin.reporting.changelog.version}</version>
 			</plugin>
@@ -651,8 +686,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Hadoop and hbase both require Java6 to run now -->
-		<jdk.version>1.7</jdk.version>
-		<compileSource>1.7</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
+		<jdk.version>1.6</jdk.version>
+		<compileSource>1.6</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
 
 		<!-- HBase dependencies -->
 		<hadoop.version>2.4.0</hadoop.version>
