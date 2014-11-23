@@ -512,8 +512,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
+import org.archive.io.RecordingInputStream;
+import org.archive.io.RecordingOutputStream;
 import org.archive.io.ReplayInputStream;
 import org.archive.io.WriterPool;
 import org.archive.io.hbase.HBaseParameters;
@@ -795,7 +798,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		long writerPoolMemberPosition = hbaseWriter.getPosition();
 		try {
 			// write the crawled data to hbase
-			hbaseWriter.write(curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput());
+			hbaseWriter.write(this, curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput());
 		} finally {
 			// log total bytes written
 			setTotalBytesWritten(getTotalBytesWritten() + (hbaseWriter.getPosition() - writerPoolMemberPosition));
@@ -804,6 +807,50 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		}
 		// to alert heritrix what action to take next in the crawl
 		return checkBytesWritten();
+	}
+
+	/**
+	 * * This is a stub method and is here to allow extension/overriding for
+	 * custom content parsing, data manipulation and to populate new columns.
+	 * 
+	 * For Example : html parsing, text extraction, analysis and transformation
+	 * and storing the results in new column families/columns using the batch
+	 * update object. Or even saving the values in other custom hbase tables or
+	 * other remote data sources. (a.k.a. anything you want)
+	 * 
+	 * @param curi
+	 *            - This requested uri for this content
+	 * 
+	 * @param ip
+	 *            - the ip the host name in the uri resolves to
+	 * 
+	 * @param put
+	 *            the stateful put object containing all the row data to be
+	 *            written. This is the 'output' object.
+	 * 
+	 * @param recordingOutputStream
+	 *            - request to the server (output from us to the server)
+	 * 
+	 * @param recordingInputStream
+	 *            - the server response (input from the server to us)
+	 * 
+	 * @throws IOException
+	 */
+	public void processContentBeforeWrite(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream) throws IOException {
+		// Both request and response streams are available in this method.
+		// NOTE: be sure to close your streams when you are done reading them.
+		boolean optional = false;
+		if (optional) {
+			// EXAMPLE OF HOW TO ACCESS CLIENT REQUEST DATA, THIS IS DATA SENT
+			// FROM HERITRIX
+			ReplayInputStream requestStream = recordingOutputStream.getReplayInputStream();
+			HBaseWriter.getByteArrayFromInputStream(requestStream, (int) recordingOutputStream.getSize());
+
+			// EXAMPLE OF HOW TO ACCESS SERVER RESPONSE DATA, THIS IS DATA SENT
+			// FROM THE WEB SERVER
+			ReplayInputStream resopnseStream = recordingInputStream.getReplayInputStream();
+			HBaseWriter.getByteArrayFromInputStream(resopnseStream, (int) recordingInputStream.getSize());
+		}
 	}
 
 	/**

@@ -531,6 +531,7 @@ import org.archive.io.ReplayInputStream;
 import org.archive.io.WriterPoolMember;
 import org.archive.io.WriterPoolSettings;
 import org.archive.modules.CrawlURI;
+import org.archive.modules.writer.HBaseWriterProcessor;
 
 import com.google.common.base.Preconditions;
 
@@ -689,7 +690,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	protected byte[] getByteArrayFromInputStream(final ReplayInputStream replayInputStream, final int streamSize) throws IOException {
+	public static byte[] getByteArrayFromInputStream(final ReplayInputStream replayInputStream, final int streamSize) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(streamSize);
 		try {
 			// read the InputStream to the ByteArrayOutputStream
@@ -746,7 +747,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public void write(final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream, final RecordingInputStream recordingInputStream) throws IOException {
+	public void write(final HBaseWriterProcessor hBaseWriterProcessor, final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream,
+	        final RecordingInputStream recordingInputStream) throws IOException {
 		// generate the target url of the crawled document
 		String url = curi.toString();
 
@@ -813,15 +815,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// add the raw content to the table record.
 			addSerializedDataToPut(put, getHbaseParameters().getContentColumnFamily(), getHbaseParameters().getContentColumnName(),
 			        getByteArrayFromInputStream(responseStream, (int) recordingInputStream.getSize()));
-
-			// process the content (optional)
-			processContent(curi, ip, put, recordingOutputStream, recordingInputStream);
-
-			// TODO: add an option to manually set the timestamp value of the
-			// batchPut object
-			// Set crawl time as the timestamp to the Put object.
-			// batchPut.setTimeStamp(curi.getFetchBeginTime());
-
+			// call the method that can be overridden from hbaseWriterProcessor
+			hBaseWriterProcessor.processContentBeforeWrite(curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
 			getHTable().put(put);
 		} finally {
@@ -851,50 +846,4 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 		return bytes;
 	}
-
-	/**
-	 * * This is a stub method and is here to allow extension/overriding for
-	 * custom content parsing, data manipulation and to populate new columns.
-	 * 
-	 * For Example : html parsing, text extraction, analysis and transformation
-	 * and storing the results in new column families/columns using the batch
-	 * update object. Or even saving the values in other custom hbase tables or
-	 * other remote data sources. (a.k.a. anything you want)
-	 * 
-	 * @param curi
-	 *            - This requested uri for this content
-	 * 
-	 * @param ip
-	 *            - the ip the host name in the uri resolves to
-	 * 
-	 * @param put
-	 *            the stateful put object containing all the row data to be
-	 *            written. This is the 'output' object.
-	 * 
-	 * @param recordingOutputStream
-	 *            - request to the server (output from us to the server)
-	 * 
-	 * @param recordingInputStream
-	 *            - the server response (input from the server to us)
-	 * 
-	 * @throws IOException
-	 */
-	protected void processContent(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream)
-	        throws IOException {
-		// Both request and response streams are available in this method.
-		// NOTE: be sure to close your streams when you are done reading them.
-		boolean optional = false;
-		if (optional) {
-			// EXAMPLE OF HOW TO ACCESS CLIENT REQUEST DATA, THIS IS DATA SENT
-			// FROM HERITRIX
-			ReplayInputStream requestStream = recordingOutputStream.getReplayInputStream();
-			getByteArrayFromInputStream(requestStream, (int) recordingOutputStream.getSize());
-
-			// EXAMPLE OF HOW TO ACCESS SERVER RESPONSE DATA, THIS IS DATA SENT
-			// FROM THE WEB SERVER
-			ReplayInputStream resopnseStream = recordingInputStream.getReplayInputStream();
-			getByteArrayFromInputStream(resopnseStream, (int) recordingInputStream.getSize());
-		}
-	}
-
 }
