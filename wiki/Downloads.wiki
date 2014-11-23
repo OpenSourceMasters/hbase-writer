@@ -1,0 +1,7 @@
+#labels Featured
+#Links to download build artifacts from
+
+= Download Links =
+   * HBase-Writer 0.98.7-RELEASE[http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.98.7-RELEASE/]
+
+
