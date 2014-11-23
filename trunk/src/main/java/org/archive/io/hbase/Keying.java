@@ -69,7 +69,7 @@ public class Keying {
 		if (scheme != null && scheme.length() > 0 && u.startsWith(scheme)) {
 			throw new IllegalArgumentException("Key already starts with a scheme: " + scheme);
 		}
-		Matcher m = getMatcher(u);
+		Matcher m = getURIMatcher(u);
 		if (m == null || !m.matches()) {
 			// If no match, return original String.
 			return u;
@@ -86,22 +86,27 @@ public class Keying {
 	 *         transform.
 	 */
 	public static String keyToUri(final String s, final String scheme) {
-		if (scheme != null && scheme.length() > 0 && !s.startsWith(scheme)) {
+		if (scheme == null || s == null) {
+			return s;
+		} else if (!s.toLowerCase().startsWith(scheme.toLowerCase())) {
 			return s;
 		}
-		Matcher m = getMatcher(s.substring(scheme.length()));
-		if (m == null || !m.matches()) {
+		// here we have a matching scheme
+		Matcher uriMatchObject = getURIMatcher(s.substring(scheme.length()));
+		if (uriMatchObject == null || !uriMatchObject.matches()) {
 			// If no match, return original String.
 			return s;
 		}
-		return m.group(1) + reverseHostname(m.group(2)) + m.group(3);
+		// only return a modified key if we have a matching scheme and both
+		// arguments are not null
+		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2)) + uriMatchObject.group(3);
 	}
 
-	private static Matcher getMatcher(final String u) {
-		if (u == null || u.length() <= 0) {
+	private static Matcher getURIMatcher(final String uriText) {
+		if (uriText == null || uriText.length() <= 0) {
 			return null;
 		}
-		return URI_RE_PARSER.matcher(u);
+		return URI_RE_PARSER.matcher(uriText);
 	}
 
 	public static String reverseHostname(final String hostname) {
@@ -109,12 +114,19 @@ public class Keying {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder(hostname.length());
+		Object next;
 		for (StringTokenizer st = new StringTokenizer(hostname, ".", false); st.hasMoreElements();) {
-			Object next = st.nextElement();
+			next = st.nextElement();
+			// prepend each element to the string buffer object to return a
+			// revered list of the input.
 			if (sb.length() > 0) {
 				sb.insert(0, ".");
 			}
 			sb.insert(0, next);
+		}
+		if (sb.length() != hostname.length()) {
+			throw new RuntimeException("given hostname: " + hostname + " was reversed to reflect a revers'ed hostname: " + sb.toString()
+			        + " but input and output string lengths do not match.  Please debug and fix immediately.");
 		}
 		return sb.toString();
 	}

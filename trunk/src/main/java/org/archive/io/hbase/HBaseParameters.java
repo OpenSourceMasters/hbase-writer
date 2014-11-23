@@ -640,7 +640,7 @@ public class HBaseParameters {
 
 	private String contentSizeColumnName = CONTENT_SIZE_COLUMN_NAME;
 
-	private final String contentLengthColumnName = CONTENT_LENGTH_COLUMN_NAME;
+	private String contentLengthColumnName = CONTENT_LENGTH_COLUMN_NAME;
 
 	private String fetchAttmptsColumnName = FETCH_ATTEMPTS_COLUMN_NAME;
 
@@ -1055,6 +1055,10 @@ public class HBaseParameters {
 
 	public String getContentLengthColumnName() {
 		return contentLengthColumnName;
+	}
+
+	public void setContentLengthColumnName(String contentLengthColumnName) {
+		this.contentLengthColumnName = contentLengthColumnName;
 	}
 
 }
