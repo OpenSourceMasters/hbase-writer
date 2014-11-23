@@ -816,7 +816,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			addSerializedDataToPut(put, getHbaseParameters().getContentColumnFamily(), getHbaseParameters().getContentColumnName(),
 			        getByteArrayFromInputStream(responseStream, (int) recordingInputStream.getSize()));
 			// call the method that can be overridden from hbaseWriterProcessor
-			hBaseWriterProcessor.modifyPut(curi, ip, put, recordingOutputStream, recordingInputStream);
+			hBaseWriterProcessor.modifyPut(getHbaseParameters(), curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
 			getHTable().put(put);
 		} finally {
