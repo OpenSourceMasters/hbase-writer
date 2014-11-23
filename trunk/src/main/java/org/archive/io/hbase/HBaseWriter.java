@@ -832,7 +832,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	private void addSerializedDataToPut(Put put, String colFam, String colQual, String value) {
-		addSerializedDataToPut(put, colFam, colQual, Bytes.toBytes(value));
+		addSerializedDataToPut(put, colFam, colQual, Bytes.toBytes(value != null ? value : ""));
 	}
 
 	private void addSerializedDataToPut(Put put, String colFam, String colQual, byte[] value) {
