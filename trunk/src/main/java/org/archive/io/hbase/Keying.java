@@ -35,7 +35,10 @@ import java.util.regex.Pattern;
  */
 public class Keying {
 	public static final String REFERER_URL_SCHEME = "r:";
+
 	private static final Pattern URI_RE_PARSER = Pattern.compile("^([^:/?#]+://(?:[^/?#@]+@)?)([^:/?#]+)(.*)$");
+
+	public static final String DOMAIN_NAME_DELIMITER = ".";
 
 	/**
 	 * Makes a key out of passed URI for use as row name or column qualifier.
@@ -115,12 +118,12 @@ public class Keying {
 		}
 		StringBuilder sb = new StringBuilder(hostname.length());
 		Object next;
-		for (StringTokenizer st = new StringTokenizer(hostname, ".", false); st.hasMoreElements();) {
+		for (StringTokenizer st = new StringTokenizer(hostname, DOMAIN_NAME_DELIMITER, false); st.hasMoreElements();) {
 			next = st.nextElement();
 			// prepend each element to the string buffer object to return a
 			// revered list of the input.
 			if (sb.length() > 0) {
-				sb.insert(0, ".");
+				sb.insert(0, DOMAIN_NAME_DELIMITER);
 			}
 			sb.insert(0, next);
 		}
