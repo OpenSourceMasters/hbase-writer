@@ -638,11 +638,10 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	@Override
 	protected ProcessResult innerProcessResult(CrawlURI uri) {
 		CrawlURI curi = uri;
-		long recordLength = getRecordedSize(curi);
 		ReplayInputStream replayInputStream = null;
 		try {
 			if (shouldWrite(curi)) {
-				return write(curi, recordLength, false);
+				return write(curi);
 			}
 		} catch (IOException e) {
 			curi.getNonFatalFailures().add(e);
@@ -791,14 +790,14 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	protected ProcessResult write(final CrawlURI curi, long recordLength, boolean doNotWriteContent) throws IOException {
+	protected ProcessResult write(final CrawlURI curi) throws IOException {
 		// grab the writer from the pool
 		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
 		// get the member position for logging Total Bytes Written
 		long writerPoolMemberPosition = hbaseWriter.getPosition();
 		try {
 			// write the crawled data to hbase
-			hbaseWriter.write(this, curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput());
+			hbaseWriter.write(this, curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput(), getRecordedSize(curi));
 		} finally {
 			// log total bytes written
 			setTotalBytesWritten(getTotalBytesWritten() + (hbaseWriter.getPosition() - writerPoolMemberPosition));
@@ -836,7 +835,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * 
 	 * @throws IOException
 	 */
-	public void processContentBeforeWrite(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream) throws IOException {
+	public void modifyPut(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream) throws IOException {
 		// Both request and response streams are available in this method.
 		// NOTE: be sure to close your streams when you are done reading them.
 		boolean optional = false;

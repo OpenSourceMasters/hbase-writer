@@ -748,7 +748,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public void write(final HBaseWriterProcessor hBaseWriterProcessor, final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream,
-	        final RecordingInputStream recordingInputStream) throws IOException {
+	        final RecordingInputStream recordingInputStream, long recordedSize) throws IOException {
 		// generate the target url of the crawled document
 		String url = curi.toString();
 
@@ -787,7 +787,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		// log the content length
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentLengthColumnName(), String.valueOf(curi.getContentLength()));
 		// write out the content size
-		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentSizeColumnName(), String.valueOf(curi.getContentSize()));
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentSizeColumnName(), String.valueOf(recordedSize));
 		// write out the numbre of fetch attempts
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchAttmptsColumnName(), String.valueOf(curi.getFetchAttempts()));
 		// write out the time duration it took to fetch
@@ -816,7 +816,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			addSerializedDataToPut(put, getHbaseParameters().getContentColumnFamily(), getHbaseParameters().getContentColumnName(),
 			        getByteArrayFromInputStream(responseStream, (int) recordingInputStream.getSize()));
 			// call the method that can be overridden from hbaseWriterProcessor
-			hBaseWriterProcessor.processContentBeforeWrite(curi, ip, put, recordingOutputStream, recordingInputStream);
+			hBaseWriterProcessor.modifyPut(curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
 			getHTable().put(put);
 		} finally {
