@@ -566,7 +566,7 @@ public class HBaseParameters {
 
 	public static final String defaultHbaseTableNameSpace = "";
 
-	// "content" column family and qualifiers
+	// "n" column family and qualifiers
 	/** The Constant CONTENT_COLUMN_FAMILY. */
 	public static final String CONTENT_COLUMN_FAMILY = "n";
 	
