@@ -624,9 +624,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			if (hbaseAdmin.tableExists(hbaseTableName)) {
 				boolean foundContentColumnFamily = false;
 				boolean foundCURIColumnFamily = false;
-
 				log.info("Checking table: " + hbaseTableName + " for structure...");
-
 				// Check the existing table and manipulate it if necessary
 				// to conform to the pre-existing table schema.
 				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
@@ -698,8 +696,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			replayInputStream.readFullyTo(baos);
 		} finally {
 			IOUtils.closeStream(replayInputStream);
+			baos.close();
 		}
-		baos.close();
 		return baos.toByteArray();
 	}
 
@@ -749,7 +747,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public void write(final CrawlURI curi, final String ip, final RecordingOutputStream recordingOutputStream, final RecordingInputStream recordingInputStream) throws IOException {
-
 		// generate the target url of the crawled document
 		String url = curi.toString();
 
@@ -764,77 +761,61 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			rowKey = DigestUtils.md5Hex(rowKey);
 		}
 
-		// create an hbase updateable object (the put object)
-		// Constructor takes the rowkey as the only argument
-		long currentTimestamp = System.currentTimeMillis();
-		Put batchPut = new Put(Bytes.toBytes(rowKey), currentTimestamp);
+		// create an hbase mutation object (the put object)
+		// Put put = new Put(Bytes.toBytes(rowKey), System.currentTimeMillis());
+		// The cell timestamp is the same for all cells in each Put, and its set
+		// to the time the server finished responding back to heritrix.
+		Put put = new Put(Bytes.toBytes(rowKey), curi.getFetchCompletedTime());
 
 		// write the target url to the url column
-		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getUrlColumnName()), curi.getFetchBeginTime(),
-		        serialize(Bytes.toBytes(url)));
-
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getUrlColumnName(), url);
 		// write the target ip to the ip column
-		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getIpColumnName()), curi.getFetchBeginTime(),
-		        serialize(Bytes.toBytes(ip)));
-
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getIpColumnName(), ip);
 		// is the url part of the seed url (the initial url(s) used to start the
 		// crawl)
 		if (curi.isSeed()) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getIsSeedColumnName()),
-			        serialize(Bytes.toBytes(Boolean.TRUE.booleanValue())));
-
+			addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getIsSeedColumnName(), Bytes.toBytes(Boolean.TRUE.booleanValue()));
 			if (curi.getPathFromSeed() != null && curi.getPathFromSeed().trim().length() > 0) {
-				batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getPathFromSeedColumnName()),
-				        serialize(Bytes.toBytes(curi.getPathFromSeed().trim())));
+				addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getPathFromSeedColumnName(), curi.getPathFromSeed());
 			}
 		}
 
 		// write the Via string
-		String viaStr = (curi.getVia() != null) ? curi.getVia().toString().trim() : null;
-		if (viaStr != null && viaStr.length() > 0) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getViaColumnName()), serialize(Bytes.toBytes(viaStr)));
-		}
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.toString() : null);
+		// log the content length
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentLengthColumnName(), String.valueOf(curi.getContentLength()));
+		// write out the content size
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentSizeColumnName(), String.valueOf(curi.getContentSize()));
+		// write out the numbre of fetch attempts
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchAttmptsColumnName(), String.valueOf(curi.getFetchAttempts()));
+		// write out the time duration it took to fetch
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchDurationColumnName(), String.valueOf(curi.getFetchDuration()));
+		// write out the content type from the server
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentTypeColumnName(), String.valueOf(curi.getContentType()));
 
-		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentLengthColumnName()),
-		        Bytes.toBytes(String.valueOf(curi.getContentLength())));
-
-		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentSizeColumnName()),
-		        Bytes.toBytes(String.valueOf(curi.getContentSize())));
-
-		batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchAttmptsColumnName()),
-		        Bytes.toBytes(String.valueOf(curi.getFetchAttempts())));
-
-		if (curi.getFetchDuration() > 0) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchDurationColumnName()),
-			        Bytes.toBytes(String.valueOf(curi.getFetchDuration())));
-		}
-
+		// write the added annotations
 		if (curi.getAnnotations() != null && curi.getAnnotations().size() > 0) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getFetchAnnotationsColumnName()),
-			        Bytes.toBytes(StringUtils.join(curi.getAnnotations(), ", ")));
+			addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchAnnotationsColumnName(),
+			        StringUtils.join(curi.getAnnotations(), getHbaseParameters().getFetchAnnotationsValueDelimiter()));
 		}
 
-		// Write the Crawl Request to the Put object
-		if (recordingOutputStream.getSize() > 0) {
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getRequestColumnName()),
-			        serialize(getByteArrayFromInputStream(recordingOutputStream.getReplayInputStream(), (int) recordingOutputStream.getSize())));
-		}
-
-		// Write the Crawl Response to the Put object
-		ReplayInputStream replayInputStream = recordingInputStream.getReplayInputStream();
+		// server request
+		ReplayInputStream requestStream = recordingOutputStream.getReplayInputStream();
+		// server response
+		ReplayInputStream responseStream = recordingInputStream.getReplayInputStream();
 		try {
-			// add the raw content to the table record.
-			batchPut.add(Bytes.toBytes(getHbaseParameters().getContentColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentColumnName()),
-			        serialize(getByteArrayFromInputStream(replayInputStream, (int) recordingInputStream.getSize())));
-
-			// write the added annotations
-			if (curi.getContentType() != null) {
-				batchPut.add(Bytes.toBytes(getHbaseParameters().getCuriColumnFamily()), Bytes.toBytes(getHbaseParameters().getContentTypeColumnName()),
-				        Bytes.toBytes(String.valueOf(curi.getContentType())));
+			// Write the Crawl Request to the Put object
+			if (recordingOutputStream.getSize() > 0) {
+				addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getRequestColumnName(),
+				        getByteArrayFromInputStream(requestStream, (int) recordingOutputStream.getSize()));
 			}
+			// Write the Crawl Response to the Put object
+			// add the raw content to the table record.
+			addSerializedDataToPut(put, getHbaseParameters().getContentColumnFamily(), getHbaseParameters().getContentColumnName(),
+			        getByteArrayFromInputStream(responseStream, (int) recordingInputStream.getSize()));
 
 			// process the content (optional)
-			processContent(curi, ip, batchPut, recordingInputStream);
+			processContent(curi, ip, put, recordingOutputStream, recordingInputStream);
 
 			// TODO: add an option to manually set the timestamp value of the
 			// batchPut object
@@ -842,10 +823,20 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// batchPut.setTimeStamp(curi.getFetchBeginTime());
 
 			// write the Put object to the HBase table
-			getHTable().put(batchPut);
+			getHTable().put(put);
 		} finally {
-			IOUtils.closeStream(replayInputStream);
+			// we are closing the streams once we are done using them
+			IOUtils.closeStream(requestStream);
+			IOUtils.closeStream(responseStream);
 		}
+	}
+
+	private void addSerializedDataToPut(Put put, String colFam, String colQual, String value) {
+		addSerializedDataToPut(put, colFam, colQual, Bytes.toBytes(value));
+	}
+
+	private void addSerializedDataToPut(Put put, String colFam, String colQual, byte[] value) {
+		put.add(Bytes.toBytes(colFam), Bytes.toBytes(colQual), serialize(value));
 	}
 
 	/*
@@ -862,7 +853,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	/**
-	 * This is a stub method and is here to allow extension/overriding for
+	 * * This is a stub method and is here to allow extension/overriding for
 	 * custom content parsing, data manipulation and to populate new columns.
 	 * 
 	 * For Example : html parsing, text extraction, analysis and transformation
@@ -880,12 +871,30 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *            the stateful put object containing all the row data to be
 	 *            written. This is the 'output' object.
 	 * 
-	 * @param rawContent
-	 *            - the rawContent fetched form the webserver a the given curi
+	 * @param recordingOutputStream
+	 *            - request to the server (output from us to the server)
+	 * 
+	 * @param recordingInputStream
+	 *            - the server response (input from the server to us)
+	 * 
 	 * @throws IOException
 	 */
-	protected void processContent(final CrawlURI curi, final String ip, Put put, RecordingInputStream recordingInputStream) throws IOException {
-		//
+	protected void processContent(final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream, RecordingInputStream recordingInputStream)
+	        throws IOException {
+		// Both request and response streams are available in this method.
+		// NOTE: be sure to close your streams when you are done reading them.
+		boolean optional = false;
+		if (optional) {
+			// EXAMPLE OF HOW TO ACCESS CLIENT REQUEST DATA, THIS IS DATA SENT
+			// FROM HERITRIX
+			ReplayInputStream requestStream = recordingOutputStream.getReplayInputStream();
+			getByteArrayFromInputStream(requestStream, (int) recordingOutputStream.getSize());
+
+			// EXAMPLE OF HOW TO ACCESS SERVER RESPONSE DATA, THIS IS DATA SENT
+			// FROM THE WEB SERVER
+			ReplayInputStream resopnseStream = recordingInputStream.getReplayInputStream();
+			getByteArrayFromInputStream(resopnseStream, (int) recordingInputStream.getSize());
+		}
 	}
 
 }
