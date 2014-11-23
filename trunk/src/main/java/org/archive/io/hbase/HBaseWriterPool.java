@@ -514,7 +514,6 @@ import org.archive.io.WriterPool;
 import org.archive.io.WriterPoolMember;
 import org.archive.io.WriterPoolSettings;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HBaseWriterPool.
  * 
@@ -523,23 +522,26 @@ import org.archive.io.WriterPoolSettings;
  */
 public class HBaseWriterPool extends WriterPool {
 
-	/** The _parameters. */
-	private HBaseParameters _parameters;
+	/** The hbaseParameters. */
+	private final HBaseParameters hbaseParameters;
 
 	/**
-	 * Instantiates a new h base writer pool.
-	 *
-	 * @param serial the serial
-	 * @param settings the settings
-	 * @param poolMaximumActive the pool maximum active
-	 * @param poolMaximumWait the pool maximum wait
-	 * @param parameters the parameters
+	 * Instantiates a new HBase writer pool.
+	 * 
+	 * @param serial
+	 *            the serial
+	 * @param settings
+	 *            the settings
+	 * @param poolMaximumActive
+	 *            the pool maximum active
+	 * @param poolMaximumWait
+	 *            the pool maximum wait
+	 * @param parameters
+	 *            the parameters
 	 */
 	public HBaseWriterPool(AtomicInteger serial, WriterPoolSettings settings, int poolMaximumActive, int poolMaximumWait, HBaseParameters parameters) {
-
 		super(serial, settings, poolMaximumActive, poolMaximumWait);
-
-		_parameters = parameters;
+		this.hbaseParameters = parameters;
 	}
 
 	/* (non-Javadoc)
@@ -548,9 +550,9 @@ public class HBaseWriterPool extends WriterPool {
 	@Override
 	protected WriterPoolMember makeWriter() {
 		try {
-			return new HBaseWriter(getSerialNo(), getSettings(), _parameters);
+			return new HBaseWriter(getSerialNo(), getSettings(), this.hbaseParameters);
 		} catch (IOException e) {
-			throw new RuntimeException("Couldn't create a " + HBaseWriter.class.getName() + " writer object", e);
+			throw new RuntimeException("Couldn't create a " + this.getClass().getName() + " writer object", e);
 		}
 	}
 
