@@ -1,3 +1,0 @@
-#labels Featured
-= Download Links =
-    * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.98.7-RELEASE/ HBase-Writer 0.98.7-RELEASE]
