@@ -16,12 +16,12 @@ Heritrix 3.
 
 = TABLE OF CONTENTS =
 
-* SETUP
-* CONFIGURING HERITRIX
-* FILE FORMAT
-* COMPILING THE SOURCE
-* BUILDING THE JAR
-* BUILDING THE SITE-REPORT
+  * SETUP
+  * CONFIGURING HERITRIX
+  * FILE FORMAT
+  * COMPILING THE SOURCE
+  * BUILDING THE JAR
+  * BUILDING THE SITE-REPORT
 
 The hbase-writer is an extension to the Heritrix open
 source crawler written by the Internet Archive (http://crawler.archive.org/)
