@@ -568,14 +568,14 @@ public class HBaseParameters {
 
 	// "content" column family and qualifiers
 	/** The Constant CONTENT_COLUMN_FAMILY. */
-	public static final String CONTENT_COLUMN_FAMILY = "content";
+	public static final String CONTENT_COLUMN_FAMILY = "n";
 	
 	/** The Constant CONTENT_COLUMN_NAME. */
-	public static final String CONTENT_COLUMN_NAME = "raw_data";
+	public static final String CONTENT_COLUMN_NAME = "raw";
 
 	// "curi" column family and qualifiers
 	/** The Constant CURI_COLUMN_FAMILY. */
-	public static final String CURI_COLUMN_FAMILY = "curi";
+	public static final String CURI_COLUMN_FAMILY = "c";
 	
 	/** The Constant IP_COLUMN_NAME. */
 	public static final String IP_COLUMN_NAME = "ip";
@@ -592,11 +592,13 @@ public class HBaseParameters {
 
 	public static final String FETCH_ANNOTATIONS_COLUMN_NAME = "an";
 
+	public static final String FETCH_ANNOTATIONS_VALUE_DELIMITER = ", ";
+
 	/** The Constant PATH_FROM_SEED_COLUMN_NAME. */
-	public static final String PATH_FROM_SEED_COLUMN_NAME = "path-from-seed";
+	public static final String PATH_FROM_SEED_COLUMN_NAME = "pfs";
 	
 	/** The Constant IS_SEED_COLUMN_NAME. */
-	public static final String IS_SEED_COLUMN_NAME = "is-seed";
+	public static final String IS_SEED_COLUMN_NAME = "is";
 	
 	/** The Constant VIA_COLUMN_NAME. */
 	public static final String VIA_COLUMN_NAME = "via";
@@ -605,7 +607,7 @@ public class HBaseParameters {
 	public static final String URL_COLUMN_NAME = "url";
 	
 	/** The Constant REQUEST_COLUMN_NAME. */
-	public static final String REQUEST_COLUMN_NAME = "request";
+	public static final String REQUEST_COLUMN_NAME = "req";
 	
 	/** The Constant DEFAULT_MAX_FILE_SIZE_IN_BYTES. (20 MB) */
 	public static final long DEFAULT_MAX_FILE_SIZE_IN_BYTES = Long.valueOf(20 * 1024 * 1024).longValue();
@@ -647,6 +649,8 @@ public class HBaseParameters {
 	private String fetchDurationColumnName = FETCH_DURATION_COLUMN_NAME;
 
 	private String fetchAnnotationsColumnName = FETCH_ANNOTATIONS_COLUMN_NAME;
+
+	private String fetchAnnotationsValueDelimiter = FETCH_ANNOTATIONS_VALUE_DELIMITER;
 
 	/** The path from seed column name. */
 	private String pathFromSeedColumnName = PATH_FROM_SEED_COLUMN_NAME;
@@ -1059,6 +1063,14 @@ public class HBaseParameters {
 
 	public void setContentLengthColumnName(String contentLengthColumnName) {
 		this.contentLengthColumnName = contentLengthColumnName;
+	}
+
+	public String getFetchAnnotationsValueDelimiter() {
+		return fetchAnnotationsValueDelimiter;
+	}
+
+	public void setFetchAnnotationsValueDelimiter(String fetchAnnotationsValueDelimiter) {
+		this.fetchAnnotationsValueDelimiter = fetchAnnotationsValueDelimiter;
 	}
 
 }
