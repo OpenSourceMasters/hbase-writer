@@ -1,6 +1,159 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	<properties>
+		<!-- Project variables -->
+		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.releases>
+		<hbase-writer.repository-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.snapshots>
+
+		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
+		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
+		<!-- Output for site files -->
+		<hbase-writer.distribution-manager.report-site>${user.home}/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
+		<!-- End of Project variables -->
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<webui.stylecss>style.css</webui.stylecss>
+		<applicationContext>defaultApplicationContext</applicationContext>
+		<!-- logging variables -->
+		<log4j.httpclient.wire.content.threshold>DEBUG</log4j.httpclient.wire.content.threshold>
+		<log4j.threshold.3rdparty>DEBUG</log4j.threshold.3rdparty>
+		<!-- the mail server to use for sending error emails -->
+		<log4j.smtp.host>localhost</log4j.smtp.host>
+		<log4j.smtp.email.domain>localhost.localhost</log4j.smtp.email.domain>
+		<log4j.smtp.email.to>root@localhost</log4j.smtp.email.to>
+		<log4j.smtp.email.from.domain>@opensourcemasters.com</log4j.smtp.email.from.domain>
+		<error.emails>${domain.label}-${artifactId}-error${log4j.smtp.email.from.domain}</error.emails>
+
+		<output.url>${nexus.host}/nexus/content/repositories/releases</output.url>
+		<output.snapshot-url>${nexus.host}/nexus/content/repositories/snapshots</output.snapshot-url>
+		<output.site-baseurl>file://${user.home}/ig-sites</output.site-baseurl>
+		<output.site-url>${output.site-baseurl}</output.site-url>
+
+		<enforcer.diff.failBuild>true</enforcer.diff.failBuild>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- Hadoop and hbase both require Java6 to run now -->
+		<jdk.version>1.6</jdk.version>
+		<compileSource>1.6</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
+
+		<!-- HBase dependencies -->
+		<hadoop.version>2.4.0</hadoop.version>
+		<hbase.version>0.98.7-hadoop2</hbase.version>
+		<zookeeper.version>3.4.6</zookeeper.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j-api.version>1.7.5</slf4j-api.version>
+		<protobuf.version>2.5.0</protobuf.version>
+		<guava.version>11.0.2</guava.version>
+		<htrace.version>2.04</htrace.version>
+		<jackson.version>1.8.8</jackson.version>
+		<netty.version>3.6.6.Final</netty.version>
+		<commons-configuration.version>1.6</commons-configuration.version>
+		<!-- End of HBase dependencies -->
+
+		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
+			missing. -->
+		<!-- <springframework.version>4.0.4.RELEASE</springframework.version>
+		 -->
+		<springframework.version>4.1.1.RELEASE</springframework.version>
+
+		<heritrix.version>3.2.0</heritrix.version>
+		<fastutil.version>5.0.9</fastutil.version>
+		<overlay.commons-pool.version>1.3</overlay.commons-pool.version>
+		<overlay.commons-httpclient.version>3.1</overlay.commons-httpclient.version>
+		<!-- End of Heritrix2 dependencies -->
+
+		<testng.version>6.8.5</testng.version>
+		<json.version>20090211</json.version>
+
+		<!-- Start of Maven plugin verions -->
+		<maven.version>3.2.1</maven.version>
+		
+		<testng.version>6.8.8</testng.version>
+		<hsqldb.version>2.3.2</hsqldb.version>
+		<!-- ============== END OF PROJECT DEPENDENCY VERIONS ========= -->
+
+		<!-- ========================= START OF MAVEN PLUGIN VERIONS ========= -->
+		<!--  stsart of build plugin versions -->
+		
+		<plugin.xdoclet2.version>2.0.5</plugin.xdoclet2.version>
+		<tomcat.plugin.version>2.2</tomcat.plugin.version>
+		<war.plugin.version>2.4</war.plugin.version>
+		
+		<plugin.build.antrun.version>1.7</plugin.build.antrun.version>
+		<plugin.build.assembly.version>2.5</plugin.build.assembly.version>
+		<plugin.build.buildnumber.version>1.3</plugin.build.buildnumber.version>
+		<plugin.build.changes.version>2.11</plugin.build.changes.version>
+		<plugin.build.checkstyle.version>2.13</plugin.build.checkstyle.version>
+		<plugin.build.clean.version>2.6</plugin.build.clean.version>
+		<plugin.build.clover.version>3.1</plugin.build.clover.version> <!-- commercial plugin -->
+		<plugin.build.cobertura.version>2.6</plugin.build.cobertura.version>
+		<plugin.build.compiler.version>3.2</plugin.build.compiler.version>
+		<plugin.build.doap.version>1.1</plugin.build.doap.version>
+		<!-- 
+		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
+		https://jira.codehaus.org/browse/MDEP-469
+		 -->
+		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
+		<plugin.build.deploy.version>2.8.2</plugin.build.deploy.version>
+		<plugin.build.docck.version>1.0</plugin.build.docck.version>
+		<plugin.build.eclipse.version>2.9</plugin.build.eclipse.version>
+		<plugin.build.enforcer.version>1.3.1</plugin.build.enforcer.version>
+		<plugin.build.help.version>2.2</plugin.build.help.version>
+		<plugin.build.jar.version>2.5</plugin.build.jar.version>
+		<plugin.build.javadoc.version>2.10.1</plugin.build.javadoc.version>
+		<plugin.build.gpg.version>1.5</plugin.build.gpg.version>
+		<plugin.build.install.version>2.5.2</plugin.build.install.version>
+		<plugin.build.pdf.version>1.2</plugin.build.pdf.version>
+		<plugin.build.pmd.version>3.2</plugin.build.pmd.version>
+		<!-- 
+		This version causes build errors and filtering issues
+		<plugin.build.resources.version>2.7</plugin.build.resources.version>
+		 -->
+		<plugin.build.resources.version>2.6</plugin.build.resources.version>
+		<plugin.build.release.version>2.5.1</plugin.build.release.version>
+		<plugin.build.scm.version>1.9.2</plugin.build.scm.version>
+		<plugin.build.shade.version>2.3</plugin.build.shade.version>
+		<plugin.build.site.version>3.4</plugin.build.site.version>
+		<plugin.build.source.version>2.4</plugin.build.source.version>
+		<plugin.build.surefire.version>2.17</plugin.build.surefire.version>
+		<!--  end of build plugin versions -->
+		
+		<!--  start of Reporting plugin versions -->
+		<plugin.emma.version>0.5</plugin.emma.version>
+		
+		<plugin.reporting.changelog.version>2.3</plugin.reporting.changelog.version>
+		<plugin.reporting.checkstyle.version>2.13</plugin.reporting.checkstyle.version>
+		<plugin.reporting.clirr.version>2.6.1</plugin.reporting.clirr.version>
+		<plugin.reporting.cobertura.version>2.6</plugin.reporting.cobertura.version>
+		<plugin.reporting.compiler.version>3.2</plugin.reporting.compiler.version>
+		<!-- 
+		<plugin.reporting.dependency.version>2.9</plugin.reporting.dependency.version>
+		https://jira.codehaus.org/browse/MDEP-469
+		 -->
+		<plugin.reporting.dependency.version>2.8</plugin.reporting.dependency.version>
+		<plugin.reporting.findbugs.version>3.0.0</plugin.reporting.findbugs.version>
+		<plugin.reporting.jacoco.version>0.7.1.201405082137</plugin.reporting.jacoco.version>
+		<plugin.reporting.javadoc.version>2.10.1</plugin.reporting.javadoc.version>
+		<plugin.reporting.javancss.version>2.0</plugin.reporting.javancss.version>
+		<plugin.reporting.jdepend.version>2.0</plugin.reporting.jdepend.version>
+		<plugin.reporting.jxr.version>2.4</plugin.reporting.jxr.version>
+		<plugin.reporting.linkcheck.version>1.1</plugin.reporting.linkcheck.version>
+		<plugin.reporting.plugin.version>3.3</plugin.reporting.plugin.version>
+		<plugin.reporting.pmd.version>3.2</plugin.reporting.pmd.version>
+		<plugin.reporting.project-info.version>2.7</plugin.reporting.project-info.version>
+		<plugin.reporting.surefire-report.version>2.17</plugin.reporting.surefire-report.version>
+		<plugin.reporting.taglist.version>2.4</plugin.reporting.taglist.version>
+		<plugin.reporting.versions.version>2.1</plugin.reporting.versions.version>
+		<!--  end of Reporting plugin versions -->
+		<!-- ========================= END OF MAVEN PLUGIN VERIONS ============================= -->
+	</properties>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.archive</groupId>
 	<artifactId>hbase-writer</artifactId>
@@ -341,6 +494,12 @@
 			<artifactId>heritrix-modules</artifactId>
 			<version>${heritrix.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>${commons-configuration.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>fastutil</groupId>
@@ -424,7 +583,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${plugin.build.dependency.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
@@ -432,7 +590,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>${plugin.build.release.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-pdf-plugin</artifactId>
@@ -504,7 +661,6 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${plugin.build.assembly.version}</version>
 				<executions>
 					<execution>
 						<id>make-assembly</id>
@@ -648,157 +804,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
-	<properties>
-		<!-- Project variables -->
-		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.releases>
-		<hbase-writer.repository-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.snapshots>
-
-		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
-		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
-		<!-- Output for site files -->
-		<hbase-writer.distribution-manager.report-site>${user.home}/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
-		<!-- End of Project variables -->
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<webui.stylecss>style.css</webui.stylecss>
-		<applicationContext>defaultApplicationContext</applicationContext>
-		<!-- logging variables -->
-		<log4j.httpclient.wire.content.threshold>DEBUG</log4j.httpclient.wire.content.threshold>
-		<log4j.threshold.3rdparty>DEBUG</log4j.threshold.3rdparty>
-		<!-- the mail server to use for sending error emails -->
-		<log4j.smtp.host>localhost</log4j.smtp.host>
-		<log4j.smtp.email.domain>localhost.localhost</log4j.smtp.email.domain>
-		<log4j.smtp.email.to>root@localhost</log4j.smtp.email.to>
-		<log4j.smtp.email.from.domain>@opensourcemasters.com</log4j.smtp.email.from.domain>
-		<error.emails>${domain.label}-${artifactId}-error${log4j.smtp.email.from.domain}</error.emails>
-
-		<output.url>${nexus.host}/nexus/content/repositories/releases</output.url>
-		<output.snapshot-url>${nexus.host}/nexus/content/repositories/snapshots</output.snapshot-url>
-		<output.site-baseurl>file://${user.home}/ig-sites</output.site-baseurl>
-		<output.site-url>${output.site-baseurl}</output.site-url>
-
-		<enforcer.diff.failBuild>true</enforcer.diff.failBuild>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<!-- Hadoop and hbase both require Java6 to run now -->
-		<jdk.version>1.6</jdk.version>
-		<compileSource>1.6</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
-
-		<!-- HBase dependencies -->
-		<hadoop.version>2.4.0</hadoop.version>
-		<hbase.version>0.98.7-hadoop2</hbase.version>
-		<zookeeper.version>3.4.5</zookeeper.version>
-		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.7.5</slf4j.version>
-		<slf4j-api.version>1.7.5</slf4j-api.version>
-		<protobuf.version>2.5.0</protobuf.version>
-		<guava.version>11.0.2</guava.version>
-		<htrace.version>2.04</htrace.version>
-		<jackson.version>1.8.8</jackson.version>
-		<netty.version>3.6.6.Final</netty.version>
-		<!-- End of HBase dependencies -->
-
-		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
-			missing. -->
-		<!-- <springframework.version>4.0.4.RELEASE</springframework.version>
-		 -->
-		<springframework.version>4.1.1.RELEASE</springframework.version>
-
-		<heritrix.version>3.2.0</heritrix.version>
-		<fastutil.version>5.0.9</fastutil.version>
-		<overlay.commons-pool.version>1.3</overlay.commons-pool.version>
-		<overlay.commons-httpclient.version>3.1</overlay.commons-httpclient.version>
-		<!-- End of Heritrix2 dependencies -->
-
-		<testng.version>6.8.5</testng.version>
-		<json.version>20090211</json.version>
-
-		<!-- Start of Maven plugin verions -->
-		<maven.version>3.2.1</maven.version>
-		
-		<testng.version>6.8.8</testng.version>
-		<hsqldb.version>2.3.2</hsqldb.version>
-		<!-- ============== END OF PROJECT DEPENDENCY VERIONS ========= -->
-
-		<!-- ========================= START OF MAVEN PLUGIN VERIONS ========= -->
-		<!--  stsart of build plugin versions -->
-		
-		<plugin.xdoclet2.version>2.0.5</plugin.xdoclet2.version>
-		<tomcat.plugin.version>2.2</tomcat.plugin.version>
-		<war.plugin.version>2.4</war.plugin.version>
-		
-		<plugin.build.antrun.version>1.7</plugin.build.antrun.version>
-		<plugin.build.assembly.version>2.5</plugin.build.assembly.version>
-		<plugin.build.buildnumber.version>1.3</plugin.build.buildnumber.version>
-		<plugin.build.changes.version>2.11</plugin.build.changes.version>
-		<plugin.build.checkstyle.version>2.13</plugin.build.checkstyle.version>
-		<plugin.build.clean.version>2.6</plugin.build.clean.version>
-		<plugin.build.clover.version>3.1</plugin.build.clover.version> <!-- commercial plugin -->
-		<plugin.build.cobertura.version>2.6</plugin.build.cobertura.version>
-		<plugin.build.compiler.version>3.2</plugin.build.compiler.version>
-		<plugin.build.doap.version>1.1</plugin.build.doap.version>
-		<!-- 
-		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
-		https://jira.codehaus.org/browse/MDEP-469
-		 -->
-		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
-		<plugin.build.deploy.version>2.8.2</plugin.build.deploy.version>
-		<plugin.build.docck.version>1.0</plugin.build.docck.version>
-		<plugin.build.eclipse.version>2.9</plugin.build.eclipse.version>
-		<plugin.build.enforcer.version>1.3.1</plugin.build.enforcer.version>
-		<plugin.build.help.version>2.2</plugin.build.help.version>
-		<plugin.build.jar.version>2.5</plugin.build.jar.version>
-		<plugin.build.javadoc.version>2.10.1</plugin.build.javadoc.version>
-		<plugin.build.gpg.version>1.5</plugin.build.gpg.version>
-		<plugin.build.install.version>2.5.2</plugin.build.install.version>
-		<plugin.build.pdf.version>1.2</plugin.build.pdf.version>
-		<plugin.build.pmd.version>3.2</plugin.build.pmd.version>
-		<!-- 
-		This version causes build errors and filtering issues
-		<plugin.build.resources.version>2.7</plugin.build.resources.version>
-		 -->
-		<plugin.build.resources.version>2.6</plugin.build.resources.version>
-		<plugin.build.release.version>2.5.1</plugin.build.release.version>
-		<plugin.build.scm.version>1.9.2</plugin.build.scm.version>
-		<plugin.build.shade.version>2.3</plugin.build.shade.version>
-		<plugin.build.site.version>3.4</plugin.build.site.version>
-		<plugin.build.source.version>2.4</plugin.build.source.version>
-		<plugin.build.surefire.version>2.17</plugin.build.surefire.version>
-		<!--  end of build plugin versions -->
-		
-		<!--  start of Reporting plugin versions -->
-		<plugin.emma.version>0.5</plugin.emma.version>
-		
-		<plugin.reporting.changelog.version>2.3</plugin.reporting.changelog.version>
-		<plugin.reporting.checkstyle.version>2.13</plugin.reporting.checkstyle.version>
-		<plugin.reporting.clirr.version>2.6.1</plugin.reporting.clirr.version>
-		<plugin.reporting.cobertura.version>2.6</plugin.reporting.cobertura.version>
-		<plugin.reporting.compiler.version>3.2</plugin.reporting.compiler.version>
-		<!-- 
-		<plugin.reporting.dependency.version>2.9</plugin.reporting.dependency.version>
-		https://jira.codehaus.org/browse/MDEP-469
-		 -->
-		<plugin.reporting.dependency.version>2.8</plugin.reporting.dependency.version>
-		<plugin.reporting.findbugs.version>3.0.0</plugin.reporting.findbugs.version>
-		<plugin.reporting.jacoco.version>0.7.1.201405082137</plugin.reporting.jacoco.version>
-		<plugin.reporting.javadoc.version>2.10.1</plugin.reporting.javadoc.version>
-		<plugin.reporting.javancss.version>2.0</plugin.reporting.javancss.version>
-		<plugin.reporting.jdepend.version>2.0</plugin.reporting.jdepend.version>
-		<plugin.reporting.jxr.version>2.4</plugin.reporting.jxr.version>
-		<plugin.reporting.linkcheck.version>1.1</plugin.reporting.linkcheck.version>
-		<plugin.reporting.plugin.version>3.3</plugin.reporting.plugin.version>
-		<plugin.reporting.pmd.version>3.2</plugin.reporting.pmd.version>
-		<plugin.reporting.project-info.version>2.7</plugin.reporting.project-info.version>
-		<plugin.reporting.surefire-report.version>2.17</plugin.reporting.surefire-report.version>
-		<plugin.reporting.taglist.version>2.4</plugin.reporting.taglist.version>
-		<plugin.reporting.versions.version>2.1</plugin.reporting.versions.version>
-		<!--  end of Reporting plugin versions -->
-		<!-- ========================= END OF MAVEN PLUGIN VERIONS ============================= -->
-	</properties>
-
 </project>
