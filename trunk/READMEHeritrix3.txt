@@ -15,12 +15,12 @@ Heritrix 3.
 
 = TABLE OF CONTENTS =
 
-* SETUP
-* CONFIGURING HERITRIX
-* FILE FORMAT
-* COMPILING THE SOURCE
-* BUILDING THE JAR
-* BUILDING THE SITE-REPORT
+  * SETUP
+  * CONFIGURING HERITRIX
+  * FILE FORMAT
+  * COMPILING THE SOURCE
+  * BUILDING THE JAR
+  * BUILDING THE SITE-REPORT
 
 The hbase-writer is an extension to the Heritrix open
 source crawler written by the Internet Archive (http://crawler.archive.org/)
@@ -130,6 +130,7 @@ Add the following beans to the disposition chain of your job configuration:
 With the following configurable properties:
 
 org.archive.io.hbase.HBaseParameters properties:
+
 	hbaseTableName (required)
 	  Which table in HBase to write the crawl to.  This table will be created automatically if it doesnt exist.
 	  e.g. crawl
