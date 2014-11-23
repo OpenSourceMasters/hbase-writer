@@ -15,12 +15,12 @@ Heritrix 2.
 
 = TABLE OF CONTENTS =
  
-* SETUP
-* CONFIGURING HERITRIX
-* FILE FORMAT
-* COMPILING THE SOURCE
-* BUILDING THE JAR
-* BUILDING THE SITE-REPORT
+  * SETUP
+  * CONFIGURING HERITRIX
+  * FILE FORMAT
+  * COMPILING THE SOURCE
+  * BUILDING THE JAR
+  * BUILDING THE SITE-REPORT
 
 The hbase-writer is an extension to the Heritrix open
 source crawler written by the Internet Archive (http://crawler.archive.org/)
@@ -73,6 +73,9 @@ On the "Settings for sheet 'global'":
 - Return to the global sheet and set this as your writer (the page will not draw completely if
 did not type in the name of the processor properly -- see heritrix_out.log for errors).
 - Set at least the zkquorum and table configuration for HBaseWriterProcessor.
+	hbaseTableName (required)
+	  Which table in HBase to write the crawl to.  This table will be created automatically if it doesnt exist.
+	  e.g. crawl
 
 	zkQuorum (required)
 	  The zookeeper quroum that serves the hbase master address.  Since hbase-0.20.0, the master server's address is returned by the zookeeper quorum.
