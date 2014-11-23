@@ -1,6 +1,28 @@
 HBase-Writer Change Log
 
-Current /trunk - Compatible with hadoop-core-1.1.2, hbase-0.95.2 & heritrix 3.1.1
+Current /trunk - Compatible with hadoop-core-2.4.0, hbase-0.98.7-hadoop & heritrix 3.2.0
+
+Release 0.98.7 - 23.11.2014
+	1. Added wrapper method so all data added to the put object gets serialized if a 
+		serializer is specified in the configurable parameters. Also ensuring both request 
+		and response streams are closed at the end of the write to the table. Both have 
+		the potential to be open if the custom method is used and streams are not closed, 
+		now this shouldn't be a problem.
+	2. Added bug fix to shouldProcess() method. If a record got an IOException, it was 
+		logging the record as an error but still trying to process the record. Now it returns 
+		false and the record wont be processed. Also updated comments.
+	
+	3. Logging heritrix annotations if any are encountered during the crawl.  For example if a fetched url has
+		data larger than the max size limit, no data will be written but an annotation "an:size" will get written 
+		now instead.
+		
+	4. Shortened the default table column names to be more reasonable. Added a configurable delimiter 
+		when annotations are present.
+		
+	5. Bug fixes, checking for null and allowing setter for column name variables.  Moving properties to top 
+		of pom.xml file.  Updating maven plugin versions to their latest versions.  Added support to use latest 
+		version of hadoop and hbase and heritrix dependencies. Now including a list of dependencies 
+		to make it easier to update heritrix lib dependencies.
 
 Release 0.94.0 - 1.9.2013
 	1. Upgraded to latest release version of HBase and all dependencies.
