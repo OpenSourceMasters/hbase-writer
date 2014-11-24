@@ -18,4 +18,4 @@ Repository hosting provided by [http://opensourcemasters.com/ OpenSourceMasters.
 
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.18.2/ HBase-Writer 0.18.2-RELEASE]
 
-    * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.18.1/ HBase-Writer 0.18.1-RELEASE]
+    * [[download0181 HBase-Writer 0.18.1-RELEASE]]
