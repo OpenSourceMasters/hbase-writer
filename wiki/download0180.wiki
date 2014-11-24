@@ -1,6 +1,6 @@
 #summary Download link page page for HBase Writer 0.18.1
 
-= Hosted by OpenSource Masters =
+= Hosted by OpenSourceMasters =
 
 [http://opensourcemasters.com/ OpenSource Masters.com is hosting the public artifact repository.]
 
