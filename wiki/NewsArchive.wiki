@@ -1,4 +1,4 @@
-#labels Phase-QA,Featured
+#labels Featured
 ===March 29th, 2010===
 HBase-Writer 0.9-SNAPSHOT has now been released.  This version is compatible with both Heritrix 2.X and Heritrix 3.X.  Much thanks to [http://www.greglu.com/ Greg Lu] for spearheading this effort and sending in the initial patch.  Once Heritrix has an official 3.0.0-RELEASE, then HBase-writer will release version 0.9-RELEASE.  Thanks again Greg!
 
