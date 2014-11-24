@@ -1,4 +1,4 @@
-#labels Phase-Design
+#labels Phase-Design,Featured
 Welcome to HBase-Writer README for Heritrix 3.  
 
 This document can also be found online here:
