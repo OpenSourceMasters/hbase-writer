@@ -1,0 +1,2 @@
+  7th Release - Compatible with hadoop-core-0.19, hbase-0.20.0 & heritrix 2.0.1
+	(Patch submitted by Greg Lu via Ryan Smith)
