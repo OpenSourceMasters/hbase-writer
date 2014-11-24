@@ -1,0 +1,10 @@
+#summary Download link page page for HBase Writer 0.18.1
+
+= Hosted by OpenSource Masters =
+
+[http://opensourcemasters.com/ OpenSource Masters.com is hosting the public artifact repository.]
+
+= Download Link =
+    * [http://repo.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.18.1/ Click here to download HBase Writer 0.18.1]
+    * Release 0.18.1 - 24.10.2008 - 2nd Release - Compatible with hadoop-0.18.1, hbase-0.18.1 & heritrix 2.0.1
+    * Release 0.18.0 - 10.10.2008 - Initial Release - Compatible with hadoop-0.18.0, hbase-0.18.0 & heritrix 2.0.1
