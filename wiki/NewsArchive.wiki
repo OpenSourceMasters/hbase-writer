@@ -1,4 +1,6 @@
 #labels Phase-QA
+===March 29th, 2010===
+HBase-Writer 0.9-SNAPSHOT has now been released.  This version is compatible with both Heritrix 2.X and Heritrix 3.X.  Much thanks to [http://www.greglu.com/ Greg Lu] for spearheading this effort and sending in the initial patch.  Once Heritrix has an official 3.0.0-RELEASE, then HBase-writer will release version 0.9-RELEASE.  Thanks again Greg!
 
 ===October 18th, 2009===
 HBase-Writer 0.20.3 has now been released.  Thanks to the patch sent in by Joost Ouwerkerk, a major bug was discovered and fixed; the issue was that replayInputStream was not being closed properly after hbase writer wrote the raw content to the hbase table.  As a result, there was a steady growing number of open stream objects in memory as the crawler ran.  This has been fixed by manually forcing a close of the stream object.  Thanks again Joost!
