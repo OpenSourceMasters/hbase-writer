@@ -2,7 +2,7 @@
 Repository hosting provided by [http://opensourcemasters.com/ OpenSourceMasters.com]
 
 = Download Links =
-    * [download0987 HBase-Writer 0.98.7-RELEASE]  *Latest Release*
+    * [download0987 HBase-Writer 0.98.7-RELEASE]  *(Latest Release)*
 
     * [download0940 HBase-Writer 0.94.0-RELEASE]  
 
