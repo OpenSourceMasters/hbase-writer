@@ -1,11 +1,19 @@
 #labels Featured
 = Download Links =
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.98.7-RELEASE/ HBase-Writer 0.98.7-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.94.0-RELEASE/ HBase-Writer 0.94.0-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.90.4/ HBase-Writer 0.90.4-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.9-20100330.003614/ HBase-Writer 0.9-20100330.003614]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.20.3/ HBase-Writer 0.20.3-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.19.1/ HBase-Writer 0.19.1-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.19.0/ HBase-Writer 0.19.0-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.18.2/ HBase-Writer 0.18.2-RELEASE]
+
     * [http://repo1.opensourcemasters.com:8080/nexus/content/repositories/releases/org/archive/hbase-writer/0.18.1/ HBase-Writer 0.18.1-RELEASE]
