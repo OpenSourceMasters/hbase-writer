@@ -1,6 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.archive</groupId>
+	<artifactId>hbase-writer</artifactId>
+	<packaging>jar</packaging>
+	<version>0.98.8-SNAPSHOT</version>
+	<name>HBase Writer</name>
+	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
+	<url>http://code.google.com/p/hbase-writer</url>
+
+	<inceptionYear>2007</inceptionYear>
+
+	<prerequisites>
+		<maven>3.0.3</maven>
+	</prerequisites>
+
 	<properties>
 		<!-- Project variables -->
 		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.releases>
@@ -9,7 +24,7 @@
 		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
 		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
 		<!-- Output for site files -->
-		<hbase-writer.distribution-manager.report-site>${user.home}/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
+		<hbase-writer.distribution-manager.report-site>http://projects.opensourcemasters.org/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
 		<!-- End of Project variables -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -154,21 +169,6 @@
 		<!-- ========================= END OF MAVEN PLUGIN VERIONS ============================= -->
 	</properties>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.archive</groupId>
-	<artifactId>hbase-writer</artifactId>
-	<packaging>jar</packaging>
-	<version>0.98.8-SNAPSHOT</version>
-	<name>HBase Writer</name>
-	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
-	<url>http://code.google.com/p/hbase-writer</url>
-
-	<inceptionYear>2007</inceptionYear>
-
-	<prerequisites>
-		<maven>3.0.3</maven>
-	</prerequisites>
-
 	<issueManagement>
 		<system>GoogleCode Issues</system>
 		<url>http://code.google.com/p/hbase-writer/issues/list</url>
@@ -217,7 +217,7 @@
 
 	<ciManagement>
 		<system>hudson</system>
-		<url>http://repo1.opensourcemasters.com:8080/hudson/</url>
+		<url>http://hbw-ci.opensourcemasters.com:8080/hudson/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
