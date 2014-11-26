@@ -513,6 +513,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 import org.archive.io.RecordingInputStream;
@@ -736,27 +737,29 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	private boolean isRecordNew(CrawlURI curi) throws IOException {
 		// borrow the writer from the pool
-		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
-		// get the client from the writer
-		HTable hbaseTable = hbaseWriter.getHTable();
+		HBaseWriter hbaseWriter = ((HBaseWriter) getPool().borrowFile());
 		// Here we can generate the rowkey for this uri ...
-		String url = curi.toString();
-		String row = HBaseWriter.createRowKeyFromUrl(url);
+		String row = HBaseWriter.createRowKeyFromUrl(curi.toString());
 		// Default is true since we check for conditions to determine if the row key already exists.
 		boolean isNew = true;
 		try {
-			// and look it up to see if it already exists...
-			Get rowToGet = new Get(Bytes.toBytes(row));
-			if (hbaseTable.get(rowToGet) != null && !hbaseTable.get(rowToGet).isEmpty()) {
-				// if it exists, then its not new
-				if (log.isDebugEnabled()) {
-					log.debug("Not A NEW Record - Url: " + url + " has the existing rowkey: " + row + " and has cell data.");
+			// get the client from the writer
+			HTable hbaseTable = hbaseWriter.getHTable();
+			try {
+				// and look it up to see if it already exists...
+				Result result = hbaseTable.get(new Get(Bytes.toBytes(row)));
+				if (result != null && !result.isEmpty()) {
+					// if it exists, then its not new
+					if (log.isDebugEnabled()) {
+						log.debug("Not A NEW Record - Url: " + curi.toString() + " has the existing rowkey: " + row + " and has cell data.");
+					}
+					isNew = false;
 				}
+			} catch (IOException e) {
+				log.error("Failed to determine if curi: " + curi.toString() + " - rowkey: " + row
+				        + " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
 				isNew = false;
 			}
-		} catch (IOException e) {
-			log.error("Failed to determine if record: " + row + " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
-			isNew = false;
 		} finally {
 			// always return the client back to the pool no matter what
 			try {
@@ -770,7 +773,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		// if we are here then the row key must be new  (it does not exist), 
 		// so its a new record, isNew should still be set to "true" at this point.
 		if (log.isDebugEnabled()) {
-			log.debug("Found A NEW Record - Url: " + url + " has no existing rowkey: " + row );
+			log.debug("Found A NEW Record - Url: " + curi.toString() + " has no existing rowkey: " + row);
 		}
 		return isNew;
 	}
