@@ -1,4 +1,4 @@
-description:
+The column qualifier name for storing the Crawl URI related data for server ip.  default description:
 HBaseWriter processor.
 
 server-cache-description:
@@ -20,29 +20,68 @@ zero means no upper limit.
 table-description:
 Name of the HBase table to write crawl to
 
-zkquorum-description:
-quorum of zk hosts that describe where the hbase master is.
+zkQuorum-description:
+comma separated list of quorum of zk hosts that describe where the hbase master is.
 
-zkport-description:
+zkPort-description:
 The zookeeper quroum client port that clients should connect to to get HBase information.
 
-only-write-new-records-description:
+onlyWriteNewRecords-description:
 If set to true, only write new rowkey records (urls) to hbase.  
 Default is set to false, which writes all urls that are crawled.
 
-only-process-new-records-description:
+onlyProcessNewRecords-description:
 If set to true, only process (fetch and parse) new rowkey records (urls) to crawl.  
 Default is set to false, which fetchs and parses all urls, even if they exist in hbase.
 
-content-column-family-description:
-The column family name for where you want to save the content to. Defaults to "newcontent".
+defaultMaxFileSizeInBytes-description:
+Set to 25MB (25*1024*1024 bytes) by default.  If data item is fetched and it exceeds this amount, the content will not be written to the hbase table.
 
-content-column-name-description:
-The column qualifier name for where you want to save the content to. Defaults to "raw_data" which becomes "newcontent:raw_data"
+contentColumnFamily-description:
+The column family name for where you want to save the content to. Defaults to "n".
 
-curiColumnFamily
-The column family name for storing the Crawl URI related information. Defaults to "curi".
+contentColumnName-description:
+The column qualifier name for where you want to save the content to. Defaults to "raw" which becomes "n:raw"
 
-default-max-file-size-in-bytes-description:
-Set to 20MB (20*1024*1024 bytes) by default.  If data item is fetched and it exceeds this amount, the content will not be written to hbase.
+curiColumnFamily-description:
+The column family name for storing the Crawl URI related information. Defaults to "c".
+
+ipColumnName-description:
+The column qualifier name for storing the Crawl URI related data for server ip.  default value="ip"
+
+pathFromSeedColumnName-description:
+The column qualifier name for storing the Crawl URI related data for path-from-seed.  default value="pfs"
+
+isSeedColumnName-description:
+The column qualifier name for storing the Crawl URI related data for isSeed flag.  default value="is"
+
+viaColumnName-description:
+The column qualifier name for storing the Crawl URI related data for via.  default value="via"
+
+urlColumnName-description:
+The column qualifier name for storing the Crawl URI related data for requested url.  default value="url"
+
+requestColumnName-description:
+The column qualifier name for storing the Crawl URI related data for request headers.  default value="req"
+
+contentTypeColumnName-description:
+The column qualifier name for storing the Crawl URI related data for content type from server response headers.  default value="ct"
+
+contentSizeColumnName-description:
+The column qualifier name for storing the Crawl URI related data for content size from server response headers.  default value="cz"
+
+contentLengthColumnName-description:
+The column qualifier name for storing the Crawl URI related data for content length from server response headers.  default value="cl"
+
+fetchAttmptsColumnName-description:
+The column qualifier name for storing the number of fetch attempts on this same url.  default value="fa"
+
+fetchDurationColumnName-description:
+The column qualifier name for storing the length of time it took to get a response back from the server.  default value="fd"
+
+fetchAnnotationsColumnName-description:
+The column qualifier name for storing the annotated instances during the crawl with this url.  default value="an"
+
+fetchAnnotationsValueDelimiter-description:
+The delimiter value used to store multiple annotations within the annotation cell.  default value=", "
 
