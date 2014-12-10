@@ -552,8 +552,24 @@ import org.archive.util.ArchiveUtils;
  * 	<property name="onlyProcessNewRecords" value="false" />
  * 	<property name="onlyWriteNewRecords" value="false" />
  * 	<property name="contentColumnFamily" value="newcontent" />
- *  <property name="defaultMaxFileSizeInBytes" value="26214400" />
  *  <!-- 25 *  1024 * 1024 = 26214400 bytes -->
+ *  <property name="defaultMaxFileSizeInBytes" value="26214400" />
+ *  <property name="contentColumnFamily" value="n" />
+ *  <property name="curiColumnFamily" value="c" />
+ *  <property name="contentColumnName" value="raw" />
+ *  <property name="ipColumnName" value="ip" />
+ *  <property name="pathFromSeedColumnName" value="pfs" />
+ *  <property name="isSeedColumnName" value="is" />
+ *  <property name="viaColumnName" value="via" />
+ *  <property name="urlColumnName" value="url" />
+ *  <property name="requestColumnName" value="req" />
+ *  <property name="contentTypeColumnName" value="ct" />
+ *  <property name="contentSizeColumnName" value="cz" />
+ *  <property name="contentLengthColumnName" value="cl" />
+ *  <property name="fetchAttmptsColumnName" value="fa" />
+ *  <property name="fetchDurationColumnName" value="fd" />
+ *  <property name="fetchAnnotationsColumnName" value="an" />
+ *  <property name="fetchAnnotationsValueDelimiter" value=", " />
  * 	<!-- Overwrite more options here -->
  * </bean>
  * 
