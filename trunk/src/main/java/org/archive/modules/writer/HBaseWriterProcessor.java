@@ -619,7 +619,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	@Override
 	public long getDefaultMaxFileSize() {
 		if (this.hbaseParameters != null) {
-			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
+			return this.hbaseParameters.getDefaultMaxFileSizeInBytes();
 		} 
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
@@ -806,7 +806,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 			hbaseWriter.write(this, curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput(), getRecordedSize(curi));
 		} finally {
 			// log total bytes written
-			setTotalBytesWritten(getTotalBytesWritten() + (hbaseWriter.getPosition() - writerPoolMemberPosition));
+			setTotalBytesWritten(getTotalBytesWritten() + Long.valueOf(hbaseWriter.getPosition() - writerPoolMemberPosition).longValue());
 			// return the hbaseWriter client back to the pool.
 			getPool().returnFile(hbaseWriter);
 		}

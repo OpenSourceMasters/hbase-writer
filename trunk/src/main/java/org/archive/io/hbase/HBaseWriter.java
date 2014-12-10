@@ -535,9 +535,8 @@ import org.archive.modules.writer.HBaseWriterProcessor;
 
 import com.google.common.base.Preconditions;
 
-// TODO: Auto-generated Javadoc
 /**
- * HBase implementation.
+ * HBaseWriter implementation.
  * 
  */
 public class HBaseWriter extends WriterPoolMember implements Serializer {
