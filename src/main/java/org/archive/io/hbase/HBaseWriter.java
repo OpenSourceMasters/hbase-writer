@@ -550,6 +550,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	/** The client. */
 	private final HTable hTable;
 
+	private final static boolean reverseIPAddressesTooDefault = false;
+
 	/**
 	 * Gets the hbase options.
 	 * 
@@ -723,11 +725,11 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static String createRowKeyFromUrl(String url) {
-		return Keying.createKey(url, Keying.REFERER_URL_SCHEME);
+		return Keying.createKey(url, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
 	}
 
 	public static String createUrlFromRowKey(String rowKey) {
-		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME);
+		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
 	}
 
 	/**
