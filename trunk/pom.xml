@@ -658,7 +658,7 @@
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
-
+		
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -666,7 +666,9 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
+							<!-- 
 							<goal>attached</goal>
+							 -->
 						</goals>
 					</execution>
 				</executions>
