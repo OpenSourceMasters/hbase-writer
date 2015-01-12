@@ -77,7 +77,7 @@ public class Keying {
 			// If no match, return original String.
 			return u;
 		}
-		return scheme + m.group(1) + reverseHostname(m.group(2)) + m.group(3);
+		return scheme + m.group(1) + reverseHostname(m.group(2), false) + m.group(3);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Keying {
 		}
 		// only return a modified key if we have a matching scheme and both
 		// arguments are not null
-		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2)) + uriMatchObject.group(3);
+		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2), false) + uriMatchObject.group(3);
 	}
 
 	private static Matcher getURIMatcher(final String uriText) {
@@ -112,9 +112,31 @@ public class Keying {
 		return URI_RE_PARSER.matcher(uriText);
 	}
 
-	public static String reverseHostname(final String hostname) {
+	private static boolean isInteger(String str) {
+		try {
+			Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+
+	public static String reverseHostname(final String hostname, final boolean reverseIPAddressesToo) {
 		if (hostname == null) {
 			return "";
+		}
+		// check for an IP addres,s if we find one, return it, Ip addresses sort
+		// nicely the way they are, no needed to reverse their domain name
+		// tokens.
+		if (!reverseIPAddressesToo) {
+			// check for ip
+			String[] hostNameTokens = hostname.split("\\.");
+			if (hostNameTokens.length == 4) {
+				if (isInteger(hostNameTokens[0]) && isInteger(hostNameTokens[1]) && isInteger(hostNameTokens[2]) && isInteger(hostNameTokens[3])) {
+					return hostname;
+				}
+			}
+
 		}
 		StringBuilder sb = new StringBuilder(hostname.length());
 		Object next;
