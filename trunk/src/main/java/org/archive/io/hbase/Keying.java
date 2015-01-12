@@ -68,7 +68,7 @@ public class Keying {
 	 * @see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC2396</a>
 	 */
 
-	public static String createKey(final String u, String scheme) {
+	public static String createKey(final String u, String scheme, final boolean reverseIPAddressesToo) {
 		if (scheme != null && scheme.length() > 0 && u.startsWith(scheme)) {
 			throw new IllegalArgumentException("Key already starts with a scheme: " + scheme);
 		}
@@ -77,7 +77,7 @@ public class Keying {
 			// If no match, return original String.
 			return u;
 		}
-		return scheme + m.group(1) + reverseHostname(m.group(2), false) + m.group(3);
+		return scheme + m.group(1) + reverseHostname(m.group(2), reverseIPAddressesToo) + m.group(3);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class Keying {
 	 * @return 'Restored' URI made by reversing the {@link #createKey(String)}
 	 *         transform.
 	 */
-	public static String keyToUri(final String s, final String scheme) {
+	public static String keyToUri(final String s, final String scheme, final boolean reverseIPAddressesToo) {
 		if (scheme == null || s == null) {
 			return s;
 		} else if (!s.toLowerCase().startsWith(scheme.toLowerCase())) {
@@ -102,7 +102,7 @@ public class Keying {
 		}
 		// only return a modified key if we have a matching scheme and both
 		// arguments are not null
-		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2), false) + uriMatchObject.group(3);
+		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2), reverseIPAddressesToo) + uriMatchObject.group(3);
 	}
 
 	private static Matcher getURIMatcher(final String uriText) {
