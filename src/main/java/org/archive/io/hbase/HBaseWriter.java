@@ -728,8 +728,16 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		return Keying.createKey(url, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
 	}
 
+	public static String createRowKeyFromUrl(String url, boolean reverseIPAddressesToo) {
+		return Keying.createKey(url, Keying.REFERER_URL_SCHEME, reverseIPAddressesToo);
+	}
+
 	public static String createUrlFromRowKey(String rowKey) {
 		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
+	}
+
+	public static String createUrlFromRowKey(String rowKey, boolean reverseIPAddressesToo) {
+		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME, reverseIPAddressesToo);
 	}
 
 	/**
