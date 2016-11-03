@@ -511,9 +511,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
@@ -761,7 +761,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		boolean isNew = true;
 		try {
 			// get the client from the writer
-			HTable hbaseTable = hbaseWriter.getHTable();
+			Table hbaseTable = hbaseWriter.getHTable();
 			try {
 				// and look it up to see if it already exists...
 				Get get = new Get(Bytes.toBytes(row));

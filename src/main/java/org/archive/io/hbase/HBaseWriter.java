@@ -508,6 +508,7 @@ package org.archive.io.hbase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.rmi.UnexpectedException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -520,9 +521,11 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IOUtils;
 import org.archive.io.RecordingInputStream;
@@ -548,7 +551,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	private final HBaseParameters hbaseParameters;
 
 	/** The client. */
-	private final HTable hTable;
+	private Table hTable;
 
 	private final static boolean reverseIPAddressesTooDefault = false;
 
@@ -560,15 +563,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 */
 	public HBaseParameters getHbaseParameters() {
 		return hbaseParameters;
-	}
-
-	/**
-	 * Gets the HTable client.
-	 * 
-	 * @return the client
-	 */
-	public HTable getHTable() {
-		return hTable;
 	}
 
 	/**
@@ -589,9 +583,12 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 
 		Preconditions.checkArgument(parameters != null);
 		this.hbaseParameters = parameters;
-
+		// create an instance of hbase configuration object
 		Configuration hbaseConfiguration = HBaseConfiguration.create();
-
+		// create a connection to hbase
+		Connection connection = ConnectionFactory.createConnection(hbaseConfiguration);
+		this.hTable = initializeCrawlTable(connection, TableName.valueOf(hbaseParameters.getHbaseTableName()));
+		
 		// set the zk quorum list
 		log.info("setting zookeeper quorum to : " + hbaseParameters.getZkQuorum());
 		hbaseConfiguration.setStrings(HConstants.ZOOKEEPER_QUORUM, hbaseParameters.getZkQuorum().split(","));
@@ -599,11 +596,10 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		// set the client port
 		log.info("setting zookeeper client Port to : " + hbaseParameters.getZkPort());
 		hbaseConfiguration.setInt(getHbaseParameters().getZookeeperClientPortKey(), hbaseParameters.getZkPort());
+	}
 
-		// create a crawl table
-		initializeCrawlTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
-		this.hTable = new HTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
-
+	public Table getHTable() {
+		return this.hTable;
 	}
 
 	/**
@@ -617,19 +613,19 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	protected void initializeCrawlTable(final Configuration hbaseConfiguration, final String hbaseTableName) throws IOException {
+	private Table initializeCrawlTable(final Connection connection, final TableName outputTableName) throws IOException {
 		// an HBase admin object to manage hbase tables.
-		HBaseAdmin hbaseAdmin = null;
-
+		Admin hbaseAdmin = null;
 		try {
-			hbaseAdmin = new HBaseAdmin(hbaseConfiguration);
-			if (hbaseAdmin.tableExists(hbaseTableName)) {
+			// create hbase admin instance to manage table attributes
+			hbaseAdmin = connection.getAdmin();
+			if (hbaseAdmin.tableExists(outputTableName)) {
 				boolean foundContentColumnFamily = false;
 				boolean foundCURIColumnFamily = false;
-				log.info("Checking table: " + hbaseTableName + " for structure...");
+				log.info("Checking table: " + outputTableName.getNameAsString() + " for structure...");
 				// Check the existing table and manipulate it if necessary
 				// to conform to the pre-existing table schema.
-				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(Bytes.toBytes(hbaseTableName));
+				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(outputTableName);
 				for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
 					if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseParameters().getContentColumnFamily())) {
 						foundContentColumnFamily = true;
@@ -640,29 +636,29 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 
 				// modify the table if it's missing any of the column families.
 				if (!foundContentColumnFamily || !foundCURIColumnFamily) {
-					log.info("Disabling table: " + hbaseTableName);
-					hbaseAdmin.disableTable(hbaseTableName);
+					log.info("Disabling table: " + outputTableName.getNameAsString());
+					hbaseAdmin.disableTable(outputTableName);
 
 					if (!foundContentColumnFamily) {
-						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseParameters().getContentColumnFamily());
+						log.info("Adding column to table: " + outputTableName.getNameAsString() + " column: " + getHbaseParameters().getContentColumnFamily());
 						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
 					}
 
 					if (!foundCURIColumnFamily) {
-						log.info("Adding column to table: " + hbaseTableName + " column: " + getHbaseParameters().getCuriColumnFamily());
+						log.info("Adding column to table: " + outputTableName.getNameAsString() + " column: " + getHbaseParameters().getCuriColumnFamily());
 						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
 					}
 
-					hbaseAdmin.modifyTable(Bytes.toBytes(hbaseTableName), existingHBaseTable);
+					hbaseAdmin.modifyTable(outputTableName, existingHBaseTable);
 
-					log.info("Enabling table: " + hbaseTableName);
-					hbaseAdmin.enableTable(hbaseTableName);
+					log.info("Enabling table: " + outputTableName.getNameAsString());
+					hbaseAdmin.enableTable(outputTableName);
 				}
-				log.info("Done checking table: " + hbaseTableName);
+				log.info("Done checking table: " + outputTableName.getNameAsString());
 			} else {
 				// create a new hbase table
-				log.info("Creating table: " + hbaseTableName);
-				HTableDescriptor newHBaseTable = new HTableDescriptor(TableName.valueOf(HBaseParameters.defaultHbaseTableNameSpace, hbaseTableName));
+				log.info("Creating table: " + outputTableName.getNameAsString());
+				HTableDescriptor newHBaseTable = new HTableDescriptor(TableName.valueOf(HBaseParameters.defaultHbaseTableNameSpace, outputTableName.getNameAsString()));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
 				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
 
@@ -670,6 +666,18 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 				hbaseAdmin.createTable(newHBaseTable);
 				log.info("Created table: " + newHBaseTable.getNameAsString());
 			}
+
+			if (!hbaseAdmin.tableExists(outputTableName)) {
+				throw new UnexpectedException("table does not exist: " + outputTableName.getNameAsString());
+			}
+			if (!hbaseAdmin.isTableAvailable(outputTableName)) {
+				throw new UnexpectedException("table is not available: " + outputTableName.getNameAsString());
+			}
+			if (hbaseAdmin.isTableDisabled(outputTableName)) {
+				throw new UnexpectedException("table is disabled: " + outputTableName.getNameAsString());
+			}
+			// create the hbase table reference and return it
+			return connection.getTable(outputTableName);
 		} finally {
 			if (hbaseAdmin != null) {
 				hbaseAdmin.close();
@@ -725,7 +733,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static String createRowKeyFromUrl(String url) {
-		return Keying.createKey(url, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
+		return createRowKeyFromUrl(url, reverseIPAddressesTooDefault);
 	}
 
 	public static String createRowKeyFromUrl(String url, boolean reverseIPAddressesToo) {
@@ -733,7 +741,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	public static String createUrlFromRowKey(String rowKey) {
-		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME, reverseIPAddressesTooDefault);
+		return createUrlFromRowKey(rowKey, reverseIPAddressesTooDefault);
 	}
 
 	public static String createUrlFromRowKey(String rowKey, boolean reverseIPAddressesToo) {
@@ -773,7 +781,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 
 		// create an hbase mutation object (the put object)
-		// Put put = new Put(Bytes.toBytes(rowKey), System.currentTimeMillis());
 		// The cell timestamp is the same for all cells in each Put, and its set
 		// to the time the server finished responding back to heritrix.
 		Put put = new Put(Bytes.toBytes(rowKey), curi.getFetchCompletedTime());
@@ -792,7 +799,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 
 		// write the Via string
-		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.toString() : null);
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.getVia().toString() : null);
 		// log the content length
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentLengthColumnName(), String.valueOf(curi.getContentLength()));
 		// write out the content size
@@ -827,7 +834,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// call the method that can be overridden from hbaseWriterProcessor
 			hBaseWriterProcessor.modifyPut(getHbaseParameters(), curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
-			getHTable().put(put);
+			hTable.put(put);
 		} finally {
 			// we are closing the streams once we are done using them
 			IOUtils.closeStream(requestStream);
@@ -840,7 +847,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	private void addSerializedDataToPut(Put put, String colFam, String colQual, byte[] value) {
-		put.add(Bytes.toBytes(colFam), Bytes.toBytes(colQual), serialize(value));
+		put.addColumn(Bytes.toBytes(colFam), Bytes.toBytes(colQual), serialize(value));
 	}
 
 	/*
