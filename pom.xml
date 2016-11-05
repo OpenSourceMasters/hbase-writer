@@ -40,7 +40,7 @@
 		<log4j.smtp.email.domain>localhost.localhost</log4j.smtp.email.domain>
 		<log4j.smtp.email.to>root@localhost</log4j.smtp.email.to>
 		<log4j.smtp.email.from.domain>@opensourcemasters.com</log4j.smtp.email.from.domain>
-		<error.emails>${domain.label}-${artifactId}-error${log4j.smtp.email.from.domain}</error.emails>
+		<error.emails>${domain.label}-${project.artifactId}-error${log4j.smtp.email.from.domain}</error.emails>
 
 		<output.url>${nexus.host}/nexus/content/repositories/releases</output.url>
 		<output.snapshot-url>${nexus.host}/nexus/content/repositories/snapshots</output.snapshot-url>
@@ -65,21 +65,20 @@
 
 		<protobuf.version>2.5.0</protobuf.version>
 		<guava.version>11.0.2</guava.version>
-		<htrace.version>2.04</htrace.version>
-		<jackson.version>1.8.8</jackson.version>
-		<netty.version>3.6.6.Final</netty.version>
-		
+		<htrace.version>2.05</htrace.version>
+		<jackson.version>1.9.13</jackson.version>
+		<netty.version>3.7.0.Final</netty.version>
+
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<slf4j-api.version>1.7.5</slf4j-api.version>
-		
+
 		<commons-configuration.version>1.6</commons-configuration.version>
 		<!-- End of HBase dependencies -->
 
 		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
 			missing. -->
-		<!-- <springframework.version>4.0.4.RELEASE</springframework.version>
-		 -->
+		<!-- <springframework.version>4.0.4.RELEASE</springframework.version> -->
 		<springframework.version>4.3.2.RELEASE</springframework.version>
 
 		<heritrix.version>3.2.0</heritrix.version>
@@ -88,11 +87,9 @@
 		<overlay.commons-httpclient.version>3.1</overlay.commons-httpclient.version>
 		<!-- End of Heritrix2 dependencies -->
 
-		<json.version>20160810</json.version>
-
 		<!-- Start of Maven plugin verions -->
 		<maven.version>3.3.9</maven.version>
-		
+
 		<testng.version>6.9.10</testng.version>
 		<hsqldb.version>2.3.4</hsqldb.version>
 		<!-- ============== END OF PROJECT DEPENDENCY VERIONS ========= -->
@@ -338,13 +335,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>${json.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
@@ -380,7 +370,7 @@
 			<version>${hbase.version}</version>
 			<type>pom</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-common</artifactId>
@@ -392,7 +382,7 @@
 			<artifactId>hbase-server</artifactId>
 			<version>${hbase.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-protocol</artifactId>
@@ -410,13 +400,13 @@
 			<artifactId>htrace-core</artifactId>
 			<version>${htrace.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
@@ -489,7 +479,7 @@
 			<artifactId>heritrix-modules</artifactId>
 			<version>${heritrix.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
@@ -509,6 +499,13 @@
 			<groupId>org.archive.overlays</groupId>
 			<artifactId>archive-overlay-commons-httpclient</artifactId>
 			<version>${overlay.commons-httpclient.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-test</artifactId>
+			<version>3.2.0</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -545,6 +542,46 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>net.revelc.code</groupId>
+				<artifactId>zookeeper-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<!-- This is a unique string to kill the service when finished -->
+					<shutdownString>UniqueShutDownString</shutdownString>
+					<!-- This is the port the plugin listens on for the shutdownString -->
+					<shutdownPort>21122</shutdownPort>
+					<!-- Configure the ZooKeeper port; defaults to listening on 127.0.0.1 -->
+					<clientPort>2181</clientPort>
+				</configuration>
+				<executions>
+					<execution>
+						<!-- In this example, only one ZooKeeper service is started and the 
+							two goals share the same configuration, so the stop goal sends the same shutdown 
+							message that the start goal is listening for -->
+						<id>run-zookeeper</id>
+						<goals>
+							<goal>start</goal><!-- runs at pre-integration-test phase -->
+							<goal>stop</goal><!-- runs at post-integration-test phase -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.17</version>
+				<executions>
+					<execution>
+						<!-- configure failsafe to execute some ITs which use ZooKeeper -->
+						<id>run-integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-scm-plugin</artifactId>
 				<version>${plugin.build.scm.version}</version>
 			</plugin>
@@ -563,10 +600,6 @@
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>${plugin.build.deploy.version}</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>${plugin.build.resources.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
@@ -653,7 +686,7 @@
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
-		
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -661,9 +694,7 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
-							<!-- 
-							<goal>attached</goal>
-							 -->
+							<!-- <goal>attached</goal> -->
 						</goals>
 					</execution>
 				</executions>
