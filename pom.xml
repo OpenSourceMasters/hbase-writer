@@ -8,7 +8,7 @@
 	<version>1.2.3-SNAPSHOT</version>
 	<name>HBase Writer</name>
 	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
-	<url>http://code.google.com/p/hbase-writer</url>
+	<url>https://github.com/OpenSourceMasters/hbase-writer/</url>
 
 	<inceptionYear>2007</inceptionYear>
 
@@ -65,7 +65,7 @@
 
 		<protobuf.version>2.5.0</protobuf.version>
 		<guava.version>11.0.2</guava.version>
-		<htrace.version>2.05</htrace.version>
+		<htrace.version>3.1.0-incubating</htrace.version>
 		<jackson.version>1.9.13</jackson.version>
 		<netty.version>3.7.0.Final</netty.version>
 
@@ -162,8 +162,8 @@
 	</properties>
 
 	<issueManagement>
-		<system>GoogleCode Issues</system>
-		<url>http://code.google.com/p/hbase-writer/issues/list</url>
+		<system>GitHub Issues</system>
+		<url>https://github.com/OpenSourceMasters/hbase-writer/issues</url>
 	</issueManagement>
 
 	<mailingLists>
@@ -202,9 +202,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://hbase-writer.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://hbase-writer.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/hbase-writer/source/checkout</url>
+		<connection>scm:git:git://github.com/OpenSourceMasters/hbase-writer.git</connection>
+		<developerConnection>scm:git:git://github.com/OpenSourceMasters/hbase-writer.git</developerConnection>
+		<url>https://github.com/OpenSourceMasters/hbase-writer/tree/master/</url>
 	</scm>
 
 	<ciManagement>
@@ -396,7 +396,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.cloudera.htrace</groupId>
+			<groupId>org.apache.htrace</groupId>
 			<artifactId>htrace-core</artifactId>
 			<version>${htrace.version}</version>
 		</dependency>
