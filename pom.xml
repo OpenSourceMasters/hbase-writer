@@ -15,6 +15,18 @@
 	<prerequisites>
 		<maven>3.3.9</maven>
 	</prerequisites>
+	
+	<profiles>
+	  <profile>
+	    <id>java8-doclint-disabled</id>
+	    <activation>
+	      <jdk>[1.8,)</jdk>
+	    </activation>
+	    <properties>
+	      <javadoc.opts>-Xdoclint:none</javadoc.opts>
+	    </properties>
+	  </profile>
+	</profiles>
 
 	<properties>
 		<!-- Project variables -->
@@ -615,6 +627,17 @@
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>${plugin.build.site.version}</version>
+				<configuration>
+          			<reportPlugins>
+            			<plugin>
+              				<groupId>org.apache.maven.plugins</groupId>
+              				<artifactId>maven-javadoc-plugin</artifactId>
+              				<configuration>
+                				<additionalparam>${javadoc.opts}</additionalparam>
+              				</configuration>
+            			</plugin>
+          			</reportPlugins>
+        		</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
@@ -639,6 +662,17 @@
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${plugin.build.javadoc.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<configuration>
+            				<additionalparam>${javadoc.opts}</additionalparam>
+          				</configuration>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
@@ -711,6 +745,21 @@
 	<reporting>
 		<plugins>
 			<plugin>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>${plugin.build.site.version}</version>
+				<configuration>
+          			<reportPlugins>
+            			<plugin>
+              				<groupId>org.apache.maven.plugins</groupId>
+              				<artifactId>maven-javadoc-plugin</artifactId>
+              				<configuration>
+                				<additionalparam>${javadoc.opts}</additionalparam>
+              				</configuration>
+            			</plugin>
+          			</reportPlugins>
+        		</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>${plugin.reporting.pmd.version}</version>
 				<configuration>
@@ -753,6 +802,17 @@
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>${plugin.reporting.findbugs.version}</version>
 			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>emma-maven-plugin</artifactId> -->
+			<!-- Need to turn off all emma reports for this module until they fix 
+				their bug Some of our tests are causing errors in emma. I should file a bug 
+				report for emma but its not improtant at this time. -->
+			<!-- <reportSets> <reportSet> <configuration/> <reports> <report>off</report> 
+				</reports> </configuration> </reportSet> </reportSets> </plugin> -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${plugin.reporting.jacoco.version}</version>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
@@ -784,31 +844,57 @@
 										<matchString>FIXME</matchString>
 										<matchType>exact</matchType>
 									</tag>
+									<tag>
+										<matchString>NOTE</matchString>
+										<matchType>exact</matchType>
+									</tag>
 								</tags>
 							</tagClass>
 						</tagClasses>
 					</tagListOptions>
 				</configuration>
 			</plugin>
+			<!--2013/9/9 - javancss v2.0 w/ site v3.3 and maven v3.1.0 causes site 
+				report failure, removing for now. <plugin> <groupId>org.codehaus.mojo</groupId> 
+				<artifactId>javancss-maven-plugin</artifactId> <version>${plugin.reporting.javancss.version}</version> 
+				</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>javancss-maven-plugin</artifactId>
-				<version>${plugin.reporting.javancss.version}</version>
+				<artifactId>clirr-maven-plugin</artifactId>
+				<version>${plugin.reporting.clirr.version}</version>
 			</plugin>
+			<!-- Embedded error: Error rendering Maven report: Failed during checkstyle 
+				configuration Unable to instantiate GenericIllegalRegexpCheck -->
 			<plugin>
-				<artifactId>maven-changelog-plugin</artifactId>
-				<version>${plugin.reporting.changelog.version}</version>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${plugin.reporting.checkstyle.version}</version>
 			</plugin>
-			<plugin>
-				<artifactId>maven-linkcheck-plugin</artifactId>
-				<version>${plugin.reporting.linkcheck.version}</version>
-				<configuration>
-					<excludeLinks>
-						<excludeLink>${project.repository.url}/*</excludeLink>
-						<excludeLink>http://java.net/*</excludeLink>
-					</excludeLinks>
-				</configuration>
-			</plugin>
+			<!-- Need anonymous read-only svn access for this plugin to work Getting 
+				site errors currently under this plugin. Maybe the repo isnt read only by 
+				anonymous user? <plugin> <artifactId>maven-changelog-plugin</artifactId> 
+				<version>${plugin.reporting.changelog.version}</version> </plugin> -->
+
+			<!-- 9/11/2013 - Cannot use linkcheck b/c its hitting developer.oodle.com 
+				domain and im not sure way (reading crawler logs and verifying those urls?) 
+				<plugin> <artifactId>maven-linkcheck-plugin</artifactId> <version>${plugin.reporting.linkcheck.version}</version> 
+				<configuration> <includeLinks> <includeLink>**gosection8.com/*</includeLink> 
+				<includeLink>**gosection8.local/*</includeLink> <includeLink>**go8.lan/*</includeLink> 
+				<includeLink>${project.url}/*</includeLink> </includeLinks> <excludeLinks> 
+				<excludeLink>**</excludeLink> -->
+			<!-- should we ignore svn links? We cant auth them at the moment so its 
+				off -->
+			<!-- <excludeLink>${svn.host.anon}/*</excludeLink> <excludeLink>${svn.host}/*</excludeLink> -->
+			<!-- <excludeLink>${project.repository.url}/*</excludeLink> <excludeLink>http://java.net/*</excludeLink> 
+				<excludedLink>irc://*</excludedLink> <excludedLink>mailto://*</excludedLink> 
+				<excludedLink>**/archetype/*</excludedLink> <excludedLink>**/ant-tasks/*</excludedLink> 
+				<excludedLink>**/doxia/*</excludedLink> <excludedLink>**/jxr/*</excludedLink> 
+				<excludedLink>**/maven-1.x/*</excludedLink> <excludedLink>**/mercury/*</excludedLink> 
+				<excludedLink>**/scm/*</excludedLink> <excludedLink>**/shared/*</excludedLink> 
+				<excludedLink>**/skins/*</excludedLink> <excludedLink>**/surefire/*</excludedLink> 
+				<excludedLink>**/wagon/*</excludedLink> <excludedLink>**/plugins/maven-*</excludedLink> 
+				<excludedLink>**/ref/*</excludedLink> <excludedLink>**/maven-model/*</excludedLink> 
+				<excludedLink>**/maven-settings/*</excludedLink> -->
+			<!-- </excludeLinks> </configuration> </plugin> -->
 			<!-- causes site not to build, causes doxia error. <plugin> <artifactId>maven-project-info-reports-plugin</artifactId> 
 				</plugin> -->
 			<plugin>
@@ -816,6 +902,8 @@
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>${plugin.reporting.cobertura.version}</version>
 			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rat-maven-plugin</artifactId> 
+				</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
