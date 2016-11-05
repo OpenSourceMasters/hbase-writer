@@ -53,8 +53,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Hadoop and hbase both require Java6 to run now -->
-		<jdk.version>1.8</jdk.version>
-		<compileSource>1.8</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
+		<jdk.version>1.7</jdk.version>
+		<compileSource>1.7</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
 
 		<!-- HBase dependencies -->
 		<hbase.version>1.2.3</hbase.version>
