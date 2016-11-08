@@ -1,33 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.archive</groupId>
-	<artifactId>hbase-writer</artifactId>
-	<packaging>jar</packaging>
-	<version>1.2.3-SNAPSHOT</version>
-	<name>HBase Writer</name>
-	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
-	<url>https://github.com/OpenSourceMasters/hbase-writer/</url>
-
-	<inceptionYear>2007</inceptionYear>
-
-	<prerequisites>
-		<maven>3.3.9</maven>
-	</prerequisites>
-	
-	<profiles>
-	  <profile>
-	    <id>java8-doclint-disabled</id>
-	    <activation>
-	      <jdk>[1.8,)</jdk>
-	    </activation>
-	    <properties>
-	      <javadoc.opts>-Xdoclint:none</javadoc.opts>
-	    </properties>
-	  </profile>
-	</profiles>
-
 	<properties>
 		<!-- Project variables -->
 		<hbase-writer.repository-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/groups/public</hbase-writer.repository-manager.releases>
@@ -36,7 +9,7 @@
 		<hbase-writer.distribution-manager.releases>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/releases/</hbase-writer.distribution-manager.releases>
 		<hbase-writer.distribution-manager.snapshots>http://repo1.opensourcemasters.org:8080/nexus/content/repositories/snapshots/</hbase-writer.distribution-manager.snapshots>
 		<!-- Output for site files -->
-		<hbase-writer.distribution-manager.report-site>http://projects.opensourcemasters.org/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
+		<hbase-writer.distribution-manager.report-site>${user.home}/hbase-writer-site/</hbase-writer.distribution-manager.report-site>
 		<!-- End of Project variables -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,7 +29,7 @@
 
 		<output.url>${nexus.host}/nexus/content/repositories/releases</output.url>
 		<output.snapshot-url>${nexus.host}/nexus/content/repositories/snapshots</output.snapshot-url>
-		<output.site-baseurl>file://${user.home}/maven-sites</output.site-baseurl>
+		<output.site-baseurl>file://${user.home}/ig-sites</output.site-baseurl>
 		<output.site-url>${output.site-baseurl}</output.site-url>
 
 		<enforcer.diff.failBuild>true</enforcer.diff.failBuild>
@@ -65,117 +38,140 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Hadoop and hbase both require Java6 to run now -->
-		<jdk.version>1.7</jdk.version>
-		<compileSource>1.7</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
+		<jdk.version>1.6</jdk.version>
+		<compileSource>1.6</compileSource> <!-- Needs 1.6 since were using @Override annotations on interface methods -->
 
 		<!-- HBase dependencies -->
-		<hbase.version>1.2.3</hbase.version>
-		<hbase-client.version>1.2.3</hbase-client.version>
-
-		<hadoop.version>2.5.1</hadoop.version>
+		<hadoop.version>2.4.0</hadoop.version>
+		<hbase.version>0.98.7-hadoop2</hbase.version>
 		<zookeeper.version>3.4.6</zookeeper.version>
-
-		<protobuf.version>2.5.0</protobuf.version>
-		<guava.version>11.0.2</guava.version>
-		<htrace.version>3.1.0-incubating</htrace.version>
-		<jackson.version>1.9.13</jackson.version>
-		<netty.version>3.7.0.Final</netty.version>
-
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<slf4j-api.version>1.7.5</slf4j-api.version>
-
+		<protobuf.version>2.5.0</protobuf.version>
+		<guava.version>11.0.2</guava.version>
+		<htrace.version>2.04</htrace.version>
+		<jackson.version>1.8.8</jackson.version>
+		<netty.version>3.6.6.Final</netty.version>
 		<commons-configuration.version>1.6</commons-configuration.version>
 		<!-- End of HBase dependencies -->
 
 		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
 			missing. -->
-		<!-- <springframework.version>4.0.4.RELEASE</springframework.version> -->
-		<springframework.version>4.3.4.RELEASE</springframework.version>
+		<!-- <springframework.version>4.0.4.RELEASE</springframework.version>
+		 -->
+		<springframework.version>4.1.1.RELEASE</springframework.version>
 
 		<heritrix.version>3.2.0</heritrix.version>
-		<fastutil.version>7.0.13</fastutil.version>
+		<fastutil.version>6.1.0</fastutil.version>
 		<overlay.commons-pool.version>1.3</overlay.commons-pool.version>
 		<overlay.commons-httpclient.version>3.1</overlay.commons-httpclient.version>
 		<!-- End of Heritrix2 dependencies -->
 
-		<!-- Start of Maven plugin verions -->
-		<maven.version>3.3.9</maven.version>
+		<json.version>20090211</json.version>
+		<testng.version>6.8.5</testng.version>
 
-		<testng.version>6.9.10</testng.version>
-		<hsqldb.version>2.3.4</hsqldb.version>
+		<!-- Start of Maven plugin verions -->
+		<maven.version>3.2.1</maven.version>
+		
+		<testng.version>6.8.8</testng.version>
+		<hsqldb.version>2.3.2</hsqldb.version>
 		<!-- ============== END OF PROJECT DEPENDENCY VERIONS ========= -->
 
 		<!-- ========================= START OF MAVEN PLUGIN VERIONS ========= -->
-		<!-- start of build plugin versions -->
-		<plugin.build.assembly.version>2.6</plugin.build.assembly.version>
+		<!--  stsart of build plugin versions -->
+		
+		<plugin.xdoclet2.version>2.0.5</plugin.xdoclet2.version>
 		<tomcat.plugin.version>2.2</tomcat.plugin.version>
-		<war.plugin.version>3.0.0</war.plugin.version>
-		<plugin.xdoclet2.version>2.0.7</plugin.xdoclet2.version>
-		<plugin.build.antrun.version>1.8</plugin.build.antrun.version>
-		<plugin.build.buildnumber.version>1.4</plugin.build.buildnumber.version>
-		<plugin.build.changes.version>2.12.1</plugin.build.changes.version>
-		<!-- Check style plugin 2.17 breaks the site build with a string out of 
-			index error 10-20-2015 -->
-		<plugin.build.checkstyle.version>2.16</plugin.build.checkstyle.version>
-		<plugin.build.clean.version>3.0.0</plugin.build.clean.version>
+		<war.plugin.version>2.4</war.plugin.version>
+		
+		<plugin.build.antrun.version>1.7</plugin.build.antrun.version>
+		<plugin.build.assembly.version>2.5</plugin.build.assembly.version>
+		<plugin.build.buildnumber.version>1.3</plugin.build.buildnumber.version>
+		<plugin.build.changes.version>2.11</plugin.build.changes.version>
+		<plugin.build.checkstyle.version>2.13</plugin.build.checkstyle.version>
+		<plugin.build.clean.version>2.6</plugin.build.clean.version>
 		<plugin.build.clover.version>3.1</plugin.build.clover.version> <!-- commercial plugin -->
-		<!-- version 2.7 for cobertura causes the site to fail builds from broken 
-			code -->
 		<plugin.build.cobertura.version>2.6</plugin.build.cobertura.version>
-		<plugin.build.compiler.version>3.6.0</plugin.build.compiler.version>
-		<plugin.build.doap.version>1.2</plugin.build.doap.version>
-		<plugin.build.dependency.version>2.10</plugin.build.dependency.version>
+		<plugin.build.compiler.version>3.2</plugin.build.compiler.version>
+		<plugin.build.doap.version>1.1</plugin.build.doap.version>
+		<!-- 
+		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
+		https://jira.codehaus.org/browse/MDEP-469
+		 -->
+		<plugin.build.dependency.version>2.9</plugin.build.dependency.version>
 		<plugin.build.deploy.version>2.8.2</plugin.build.deploy.version>
-		<plugin.build.docck.version>1.1</plugin.build.docck.version>
-		<plugin.build.eclipse.version>2.10</plugin.build.eclipse.version>
-		<plugin.build.enforcer.version>1.4.1</plugin.build.enforcer.version>
+		<plugin.build.docck.version>1.0</plugin.build.docck.version>
+		<plugin.build.eclipse.version>2.9</plugin.build.eclipse.version>
+		<plugin.build.enforcer.version>1.3.1</plugin.build.enforcer.version>
 		<plugin.build.help.version>2.2</plugin.build.help.version>
-		<!-- jar version 3.0.0 causes maven errors from within eclipse -->
-		<plugin.build.jar.version>3.0.2</plugin.build.jar.version>
-		<plugin.build.javadoc.version>2.10.4</plugin.build.javadoc.version>
-		<plugin.build.gpg.version>1.6</plugin.build.gpg.version>
+		<plugin.build.jar.version>2.5</plugin.build.jar.version>
+		<plugin.build.javadoc.version>2.10.1</plugin.build.javadoc.version>
+		<plugin.build.gpg.version>1.5</plugin.build.gpg.version>
 		<plugin.build.install.version>2.5.2</plugin.build.install.version>
-		<plugin.build.pdf.version>1.3</plugin.build.pdf.version>
-		<plugin.build.pmd.version>3.7</plugin.build.pmd.version>
-		<plugin.build.resources.version>3.0.1</plugin.build.resources.version>
-		<plugin.build.release.version>2.5.3</plugin.build.release.version>
-		<plugin.build.scm.version>1.9.5</plugin.build.scm.version>
-		<plugin.build.shade.version>2.4.3</plugin.build.shade.version>
-		<plugin.build.site.version>3.5.1</plugin.build.site.version>
-		<plugin.build.source.version>3.0.1</plugin.build.source.version>
-		<plugin.build.surefire.version>2.19.1</plugin.build.surefire.version>
-		<!-- end of build plugin versions -->
-
-		<!-- start of Reporting plugin versions -->
+		<plugin.build.pdf.version>1.2</plugin.build.pdf.version>
+		<plugin.build.pmd.version>3.2</plugin.build.pmd.version>
+		<!-- 
+		This version causes build errors and filtering issues
+		<plugin.build.resources.version>2.7</plugin.build.resources.version>
+		 -->
+		<plugin.build.resources.version>2.6</plugin.build.resources.version>
+		<plugin.build.release.version>2.5.1</plugin.build.release.version>
+		<plugin.build.scm.version>1.9.2</plugin.build.scm.version>
+		<plugin.build.shade.version>2.3</plugin.build.shade.version>
+		<plugin.build.site.version>3.4</plugin.build.site.version>
+		<plugin.build.source.version>2.4</plugin.build.source.version>
+		<plugin.build.surefire.version>2.17</plugin.build.surefire.version>
+		<!--  end of build plugin versions -->
+		
+		<!--  start of Reporting plugin versions -->
 		<plugin.emma.version>0.5</plugin.emma.version>
-
+		
 		<plugin.reporting.changelog.version>2.3</plugin.reporting.changelog.version>
-		<plugin.reporting.checkstyle.version>${plugin.build.checkstyle.version}</plugin.reporting.checkstyle.version>
+		<plugin.reporting.checkstyle.version>2.13</plugin.reporting.checkstyle.version>
 		<plugin.reporting.clirr.version>2.6.1</plugin.reporting.clirr.version>
-		<plugin.reporting.cobertura.version>${plugin.build.cobertura.version}</plugin.reporting.cobertura.version>
-		<plugin.reporting.compiler.version>${plugin.build.compiler.version}</plugin.reporting.compiler.version>
-		<plugin.reporting.dependency.version>${plugin.build.dependency.version}</plugin.reporting.dependency.version>
-		<plugin.reporting.findbugs.version>3.0.1</plugin.reporting.findbugs.version>
-		<plugin.reporting.jacoco.version>0.7.5.201505241946</plugin.reporting.jacoco.version>
-		<plugin.reporting.javadoc.version>${plugin.build.javadoc.version}</plugin.reporting.javadoc.version>
+		<plugin.reporting.cobertura.version>2.6</plugin.reporting.cobertura.version>
+		<plugin.reporting.compiler.version>3.2</plugin.reporting.compiler.version>
+		<!-- 
+		<plugin.reporting.dependency.version>2.9</plugin.reporting.dependency.version>
+		https://jira.codehaus.org/browse/MDEP-469
+		 -->
+		<plugin.reporting.dependency.version>2.8</plugin.reporting.dependency.version>
+		<plugin.reporting.findbugs.version>3.0.0</plugin.reporting.findbugs.version>
+		<plugin.reporting.jacoco.version>0.7.1.201405082137</plugin.reporting.jacoco.version>
+		<plugin.reporting.javadoc.version>2.10.1</plugin.reporting.javadoc.version>
 		<plugin.reporting.javancss.version>2.0</plugin.reporting.javancss.version>
 		<plugin.reporting.jdepend.version>2.0</plugin.reporting.jdepend.version>
-		<plugin.reporting.jxr.version>2.5</plugin.reporting.jxr.version>
+		<plugin.reporting.jxr.version>2.4</plugin.reporting.jxr.version>
 		<plugin.reporting.linkcheck.version>1.1</plugin.reporting.linkcheck.version>
 		<plugin.reporting.plugin.version>3.3</plugin.reporting.plugin.version>
-		<plugin.reporting.pmd.version>${plugin.build.pmd.version}</plugin.reporting.pmd.version>
-		<plugin.reporting.project-info.version>2.8</plugin.reporting.project-info.version>
-		<plugin.reporting.surefire-report.version>${plugin.build.surefire.version}</plugin.reporting.surefire-report.version>
+		<plugin.reporting.pmd.version>3.2</plugin.reporting.pmd.version>
+		<plugin.reporting.project-info.version>2.7</plugin.reporting.project-info.version>
+		<plugin.reporting.surefire-report.version>2.17</plugin.reporting.surefire-report.version>
 		<plugin.reporting.taglist.version>2.4</plugin.reporting.taglist.version>
-		<plugin.reporting.versions.version>2.2</plugin.reporting.versions.version>
-		<!-- end of Reporting plugin versions -->
+		<plugin.reporting.versions.version>2.1</plugin.reporting.versions.version>
+		<!--  end of Reporting plugin versions -->
 		<!-- ========================= END OF MAVEN PLUGIN VERIONS ============================= -->
 	</properties>
 
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.archive</groupId>
+	<artifactId>hbase-writer</artifactId>
+	<packaging>jar</packaging>
+	<version>0.98.9-SNAPSHOT</version>
+	<name>HBase Writer</name>
+	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
+	<url>http://code.google.com/p/hbase-writer</url>
+
+	<inceptionYear>2007</inceptionYear>
+
+	<prerequisites>
+		<maven>3.0.3</maven>
+	</prerequisites>
+
 	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/OpenSourceMasters/hbase-writer/issues</url>
+		<system>GoogleCode Issues</system>
+		<url>http://code.google.com/p/hbase-writer/issues/list</url>
 	</issueManagement>
 
 	<mailingLists>
@@ -214,14 +210,14 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git://github.com/OpenSourceMasters/hbase-writer.git</connection>
-		<developerConnection>scm:git:git://github.com/OpenSourceMasters/hbase-writer.git</developerConnection>
-		<url>https://github.com/OpenSourceMasters/hbase-writer/tree/master/</url>
+		<connection>scm:svn:https://hbase-writer.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://hbase-writer.googlecode.com/svn/trunk</developerConnection>
+		<url>http://code.google.com/p/hbase-writer/source/checkout</url>
 	</scm>
 
 	<ciManagement>
 		<system>hudson</system>
-		<url>http://hbw-ci.opensourcemasters.com:8080/hudson/</url>
+		<url>http://repo1.opensourcemasters.com:8080/hudson/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
@@ -347,6 +343,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
@@ -382,7 +385,7 @@
 			<version>${hbase.version}</version>
 			<type>pom</type>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-common</artifactId>
@@ -394,7 +397,7 @@
 			<artifactId>hbase-server</artifactId>
 			<version>${hbase.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-protocol</artifactId>
@@ -404,21 +407,21 @@
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
-			<version>${hbase-client.version}</version>
+			<version>${hbase.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.htrace</groupId>
+			<groupId>org.cloudera.htrace</groupId>
 			<artifactId>htrace-core</artifactId>
 			<version>${htrace.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
@@ -491,7 +494,7 @@
 			<artifactId>heritrix-modules</artifactId>
 			<version>${heritrix.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
@@ -513,13 +516,6 @@
 			<version>${overlay.commons-httpclient.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-test</artifactId>
-			<version>3.2.0</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -534,10 +530,6 @@
 		</resources>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>${plugin.build.site.version}</version>
-				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${plugin.build.assembly.version}</version>
@@ -557,46 +549,6 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>net.revelc.code</groupId>
-				<artifactId>zookeeper-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<configuration>
-					<!-- This is a unique string to kill the service when finished -->
-					<shutdownString>UniqueShutDownString</shutdownString>
-					<!-- This is the port the plugin listens on for the shutdownString -->
-					<shutdownPort>21122</shutdownPort>
-					<!-- Configure the ZooKeeper port; defaults to listening on 127.0.0.1 -->
-					<clientPort>2181</clientPort>
-				</configuration>
-				<executions>
-					<execution>
-						<!-- In this example, only one ZooKeeper service is started and the 
-							two goals share the same configuration, so the stop goal sends the same shutdown 
-							message that the start goal is listening for -->
-						<id>run-zookeeper</id>
-						<goals>
-							<goal>start</goal><!-- runs at pre-integration-test phase -->
-							<goal>stop</goal><!-- runs at post-integration-test phase -->
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.17</version>
-				<executions>
-					<execution>
-						<!-- configure failsafe to execute some ITs which use ZooKeeper -->
-						<id>run-integration-tests</id>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<artifactId>maven-scm-plugin</artifactId>
 				<version>${plugin.build.scm.version}</version>
@@ -618,6 +570,10 @@
 				<version>${plugin.build.deploy.version}</version>
 			</plugin>
 			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${plugin.build.resources.version}</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>${plugin.build.install.version}</version>
 			</plugin>
@@ -630,6 +586,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
+				<version>${plugin.build.site.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
@@ -654,17 +611,6 @@
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${plugin.build.javadoc.version}</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<configuration>
-            				<additionalparam>${javadoc.opts}</additionalparam>
-          				</configuration>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
@@ -720,7 +666,7 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
-							<!-- <goal>attached</goal> -->
+							<goal>attached</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -736,10 +682,6 @@
 
 	<reporting>
 		<plugins>
-			<plugin>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>${plugin.build.site.version}</version>
-			</plugin>
 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>${plugin.reporting.pmd.version}</version>
@@ -783,17 +725,6 @@
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>${plugin.reporting.findbugs.version}</version>
 			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>emma-maven-plugin</artifactId> -->
-			<!-- Need to turn off all emma reports for this module until they fix 
-				their bug Some of our tests are causing errors in emma. I should file a bug 
-				report for emma but its not improtant at this time. -->
-			<!-- <reportSets> <reportSet> <configuration/> <reports> <report>off</report> 
-				</reports> </configuration> </reportSet> </reportSets> </plugin> -->
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${plugin.reporting.jacoco.version}</version>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
@@ -825,57 +756,31 @@
 										<matchString>FIXME</matchString>
 										<matchType>exact</matchType>
 									</tag>
-									<tag>
-										<matchString>NOTE</matchString>
-										<matchType>exact</matchType>
-									</tag>
 								</tags>
 							</tagClass>
 						</tagClasses>
 					</tagListOptions>
 				</configuration>
 			</plugin>
-			<!--2013/9/9 - javancss v2.0 w/ site v3.3 and maven v3.1.0 causes site 
-				report failure, removing for now. <plugin> <groupId>org.codehaus.mojo</groupId> 
-				<artifactId>javancss-maven-plugin</artifactId> <version>${plugin.reporting.javancss.version}</version> 
-				</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>clirr-maven-plugin</artifactId>
-				<version>${plugin.reporting.clirr.version}</version>
+				<artifactId>javancss-maven-plugin</artifactId>
+				<version>${plugin.reporting.javancss.version}</version>
 			</plugin>
-			<!-- Embedded error: Error rendering Maven report: Failed during checkstyle 
-				configuration Unable to instantiate GenericIllegalRegexpCheck -->
 			<plugin>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${plugin.reporting.checkstyle.version}</version>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<version>${plugin.reporting.changelog.version}</version>
 			</plugin>
-			<!-- Need anonymous read-only svn access for this plugin to work Getting 
-				site errors currently under this plugin. Maybe the repo isnt read only by 
-				anonymous user? <plugin> <artifactId>maven-changelog-plugin</artifactId> 
-				<version>${plugin.reporting.changelog.version}</version> </plugin> -->
-
-			<!-- 9/11/2013 - Cannot use linkcheck b/c its hitting developer.oodle.com 
-				domain and im not sure way (reading crawler logs and verifying those urls?) 
-				<plugin> <artifactId>maven-linkcheck-plugin</artifactId> <version>${plugin.reporting.linkcheck.version}</version> 
-				<configuration> <includeLinks> <includeLink>**gosection8.com/*</includeLink> 
-				<includeLink>**gosection8.local/*</includeLink> <includeLink>**go8.lan/*</includeLink> 
-				<includeLink>${project.url}/*</includeLink> </includeLinks> <excludeLinks> 
-				<excludeLink>**</excludeLink> -->
-			<!-- should we ignore svn links? We cant auth them at the moment so its 
-				off -->
-			<!-- <excludeLink>${svn.host.anon}/*</excludeLink> <excludeLink>${svn.host}/*</excludeLink> -->
-			<!-- <excludeLink>${project.repository.url}/*</excludeLink> <excludeLink>http://java.net/*</excludeLink> 
-				<excludedLink>irc://*</excludedLink> <excludedLink>mailto://*</excludedLink> 
-				<excludedLink>**/archetype/*</excludedLink> <excludedLink>**/ant-tasks/*</excludedLink> 
-				<excludedLink>**/doxia/*</excludedLink> <excludedLink>**/jxr/*</excludedLink> 
-				<excludedLink>**/maven-1.x/*</excludedLink> <excludedLink>**/mercury/*</excludedLink> 
-				<excludedLink>**/scm/*</excludedLink> <excludedLink>**/shared/*</excludedLink> 
-				<excludedLink>**/skins/*</excludedLink> <excludedLink>**/surefire/*</excludedLink> 
-				<excludedLink>**/wagon/*</excludedLink> <excludedLink>**/plugins/maven-*</excludedLink> 
-				<excludedLink>**/ref/*</excludedLink> <excludedLink>**/maven-model/*</excludedLink> 
-				<excludedLink>**/maven-settings/*</excludedLink> -->
-			<!-- </excludeLinks> </configuration> </plugin> -->
+			<plugin>
+				<artifactId>maven-linkcheck-plugin</artifactId>
+				<version>${plugin.reporting.linkcheck.version}</version>
+				<configuration>
+					<excludeLinks>
+						<excludeLink>${project.repository.url}/*</excludeLink>
+						<excludeLink>http://java.net/*</excludeLink>
+					</excludeLinks>
+				</configuration>
+			</plugin>
 			<!-- causes site not to build, causes doxia error. <plugin> <artifactId>maven-project-info-reports-plugin</artifactId> 
 				</plugin> -->
 			<plugin>
@@ -883,8 +788,6 @@
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>${plugin.reporting.cobertura.version}</version>
 			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rat-maven-plugin</artifactId> 
-				</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>

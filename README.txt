@@ -1,11 +1,11 @@
 Welcome to HBase-Writer README.
 
 This document can also be found online here:
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/README.txt
+http://code.google.com/p/hbase-writer/wiki/README
 
 Specific versions of HBase-Writer now support different
 version combinations of Heritrix and HBase. Please refer to
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/VERSIONS.txt
+http://code.google.com/p/hbase-writer/wiki/VERSIONS
 for a more detailed list.
 
 
@@ -29,9 +29,9 @@ In turn, these tables are directly supported by the Map/Reduce framework via HBa
 HBase-Writer now supports Heritrix 2 and 3. Please refer to the corresponding
 READMEHeritrix*.txt files for specific instructions.
 
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/READMEHeritrix3.txt
+http://code.google.com/p/hbase-writer/wiki/READMEHeritrix3
 
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/READMEHeritrix2.txt
+http://code.google.com/p/hbase-writer/wiki/READMEHeritrix2
 
 = COMPILING THE SOURCE =
 

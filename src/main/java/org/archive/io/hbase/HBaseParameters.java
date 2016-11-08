@@ -564,7 +564,6 @@ public class HBaseParameters {
 	/** DEFAULT OPTIONS *. */
 	public static final int ZK_PORT = 2181;
 
-	/** The Constant defaultHbaseTableNameSpace. */
 	public static final String defaultHbaseTableNameSpace = "";
 
 	// "n" column family and qualifiers
@@ -581,25 +580,18 @@ public class HBaseParameters {
 	/** The Constant IP_COLUMN_NAME. */
 	public static final String IP_COLUMN_NAME = "ip";
 	
-	/** The Constant CONTENT_TYPE_COLUMN_NAME. */
 	public static final String CONTENT_TYPE_COLUMN_NAME = "ct";
 
-	/** The Constant CONTENT_SIZE_COLUMN_NAME. */
 	public static final String CONTENT_SIZE_COLUMN_NAME = "cz";
 
-	/** The Constant CONTENT_LENGTH_COLUMN_NAME. */
 	public static final String CONTENT_LENGTH_COLUMN_NAME = "cl";
 
-	/** The Constant FETCH_ATTEMPTS_COLUMN_NAME. */
 	public static final String FETCH_ATTEMPTS_COLUMN_NAME = "fa";
 
-	/** The Constant FETCH_DURATION_COLUMN_NAME. */
 	public static final String FETCH_DURATION_COLUMN_NAME = "fd";
 
-	/** The Constant FETCH_ANNOTATIONS_COLUMN_NAME. */
 	public static final String FETCH_ANNOTATIONS_COLUMN_NAME = "an";
 
-	/** The Constant FETCH_ANNOTATIONS_VALUE_DELIMITER. */
 	public static final String FETCH_ANNOTATIONS_VALUE_DELIMITER = ", ";
 
 	/** The Constant PATH_FROM_SEED_COLUMN_NAME. */
@@ -646,25 +638,18 @@ public class HBaseParameters {
 	/** The ip column name. */
 	private String ipColumnName = IP_COLUMN_NAME;
 	
-	/** The content type column name. */
 	private String contentTypeColumnName = CONTENT_TYPE_COLUMN_NAME;
 
-	/** The content size column name. */
 	private String contentSizeColumnName = CONTENT_SIZE_COLUMN_NAME;
 
-	/** The content length column name. */
 	private String contentLengthColumnName = CONTENT_LENGTH_COLUMN_NAME;
 
-	/** The fetch attmpts column name. */
 	private String fetchAttmptsColumnName = FETCH_ATTEMPTS_COLUMN_NAME;
 
-	/** The fetch duration column name. */
 	private String fetchDurationColumnName = FETCH_DURATION_COLUMN_NAME;
 
-	/** The fetch annotations column name. */
 	private String fetchAnnotationsColumnName = FETCH_ANNOTATIONS_COLUMN_NAME;
 
-	/** The fetch annotations value delimiter. */
 	private String fetchAnnotationsValueDelimiter = FETCH_ANNOTATIONS_VALUE_DELIMITER;
 
 	/** The path from seed column name. */
@@ -1032,128 +1017,58 @@ public class HBaseParameters {
 		this.defaultMaxFileSizeInBytes = defaultMaxFileSizeInBytes;
 	}
 
-	/**
-	 * Gets the content type column name.
-	 *
-	 * @return the content type column name
-	 */
 	public String getContentTypeColumnName() {
 		return contentTypeColumnName;
 	}
 
-	/**
-	 * Sets the content type column name.
-	 *
-	 * @param contentTypeColumnName the new content type column name
-	 */
 	public void setContentTypeColumnName(String contentTypeColumnName) {
 		this.contentTypeColumnName = contentTypeColumnName;
 	}
 
-	/**
-	 * Gets the content size column name.
-	 *
-	 * @return the content size column name
-	 */
 	public String getContentSizeColumnName() {
 		return contentSizeColumnName;
 	}
 
-	/**
-	 * Sets the content size column name.
-	 *
-	 * @param contentSizeColumnName the new content size column name
-	 */
 	public void setContentSizeColumnName(String contentSizeColumnName) {
 		this.contentSizeColumnName = contentSizeColumnName;
 	}
 
-	/**
-	 * Gets the fetch attmpts column name.
-	 *
-	 * @return the fetch attmpts column name
-	 */
 	public String getFetchAttmptsColumnName() {
 		return fetchAttmptsColumnName;
 	}
 
-	/**
-	 * Sets the fetch attmpts column name.
-	 *
-	 * @param fetchAttmptsColumnName the new fetch attmpts column name
-	 */
 	public void setFetchAttmptsColumnName(String fetchAttmptsColumnName) {
 		this.fetchAttmptsColumnName = fetchAttmptsColumnName;
 	}
 
-	/**
-	 * Gets the fetch duration column name.
-	 *
-	 * @return the fetch duration column name
-	 */
 	public String getFetchDurationColumnName() {
 		return fetchDurationColumnName;
 	}
 
-	/**
-	 * Sets the fetch duration column name.
-	 *
-	 * @param fetchDurationColumnName the new fetch duration column name
-	 */
 	public void setFetchDurationColumnName(String fetchDurationColumnName) {
 		this.fetchDurationColumnName = fetchDurationColumnName;
 	}
 
-	/**
-	 * Gets the fetch annotations column name.
-	 *
-	 * @return the fetch annotations column name
-	 */
 	public String getFetchAnnotationsColumnName() {
 		return fetchAnnotationsColumnName;
 	}
 
-	/**
-	 * Sets the fetch annotations column name.
-	 *
-	 * @param fetchAnnotationsColumnName the new fetch annotations column name
-	 */
 	public void setFetchAnnotationsColumnName(String fetchAnnotationsColumnName) {
 		this.fetchAnnotationsColumnName = fetchAnnotationsColumnName;
 	}
 
-	/**
-	 * Gets the content length column name.
-	 *
-	 * @return the content length column name
-	 */
 	public String getContentLengthColumnName() {
 		return contentLengthColumnName;
 	}
 
-	/**
-	 * Sets the content length column name.
-	 *
-	 * @param contentLengthColumnName the new content length column name
-	 */
 	public void setContentLengthColumnName(String contentLengthColumnName) {
 		this.contentLengthColumnName = contentLengthColumnName;
 	}
 
-	/**
-	 * Gets the fetch annotations value delimiter.
-	 *
-	 * @return the fetch annotations value delimiter
-	 */
 	public String getFetchAnnotationsValueDelimiter() {
 		return fetchAnnotationsValueDelimiter;
 	}
 
-	/**
-	 * Sets the fetch annotations value delimiter.
-	 *
-	 * @param fetchAnnotationsValueDelimiter the new fetch annotations value delimiter
-	 */
 	public void setFetchAnnotationsValueDelimiter(String fetchAnnotationsValueDelimiter) {
 		this.fetchAnnotationsValueDelimiter = fetchAnnotationsValueDelimiter;
 	}

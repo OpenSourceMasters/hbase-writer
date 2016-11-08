@@ -508,7 +508,6 @@ package org.archive.io.hbase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.rmi.UnexpectedException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -521,12 +520,9 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IOUtils;
 import org.archive.io.RecordingInputStream;
@@ -541,23 +537,19 @@ import com.google.common.base.Preconditions;
 
 // TODO: Auto-generated Javadoc
 /**
- * HBaseWriter implementation.
+ * HBase implementation.
  * 
  */
 public class HBaseWriter extends WriterPoolMember implements Serializer {
+
 	/** The log. */
 	private static Logger log = Logger.getLogger(HBaseWriter.class.getName());
 
 	/** The hbase options. */
 	private final HBaseParameters hbaseParameters;
 
-	/** The h table. */
-	private HTable hTable = null;
-
-	// by default we should not reverse any ip addresses since they are in the
-	/** The Constant reverseIPAddressesTooDefault. */
-	// correct rowkey sortable format.
-	private final static boolean reverseIPAddressesTooDefault = false;
+	/** The client. */
+	private final HTable hTable;
 
 	/**
 	 * Gets the hbase options.
@@ -570,12 +562,12 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	/**
-	 * Gets the h table.
-	 *
-	 * @return the h table
+	 * Gets the HTable client.
+	 * 
+	 * @return the client
 	 */
 	public HTable getHTable() {
-		return this.hTable;
+		return hTable;
 	}
 
 	/**
@@ -593,13 +585,12 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	public HBaseWriter(AtomicInteger serialNo, final WriterPoolSettings settings, HBaseParameters parameters) throws IOException {
 		// Instantiates a new HBaseWriter for the WriterPool to use in heritrix.
 		super(serialNo, settings, null);
-		// check that parameters are not null
+
 		Preconditions.checkArgument(parameters != null);
 		this.hbaseParameters = parameters;
-		// create an instance of hbase configuration object
+
 		Configuration hbaseConfiguration = HBaseConfiguration.create();
-		// create an htable reference
-		this.hTable = initializeCrawlHTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
+
 		// set the zk quorum list
 		log.info("setting zookeeper quorum to : " + hbaseParameters.getZkQuorum());
 		hbaseConfiguration.setStrings(HConstants.ZOOKEEPER_QUORUM, hbaseParameters.getZkQuorum().split(","));
@@ -607,36 +598,25 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		// set the client port
 		log.info("setting zookeeper client Port to : " + hbaseParameters.getZkPort());
 		hbaseConfiguration.setInt(getHbaseParameters().getZookeeperClientPortKey(), hbaseParameters.getZkPort());
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.archive.io.WriterPoolMember#close()
-	 */
-	@Override
-	public void close() {
-		try {
-			// close the reference to htable
-			this.hTable.close();
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "cannot close the htable reference after we are done using it.", e);
-		}
+		// create a crawl table
+		initializeCrawlTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
+		this.hTable = new HTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
+
 	}
 
 	/**
-	 * Initialize crawl H table.
-	 *
+	 * Creates the crawl table in HBase.
+	 * 
 	 * @param hbaseConfiguration
-	 *            the hbase configuration
+	 *            the c
 	 * @param hbaseTableName
-	 *            the hbase table name
-	 * @return the h table
+	 *            the table
+	 * 
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	@SuppressWarnings("deprecation")
-	protected HTable initializeCrawlHTable(final Configuration hbaseConfiguration, final String hbaseTableName) throws IOException {
+	protected void initializeCrawlTable(final Configuration hbaseConfiguration, final String hbaseTableName) throws IOException {
 		// an HBase admin object to manage hbase tables.
 		HBaseAdmin hbaseAdmin = null;
 
@@ -694,90 +674,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 				hbaseAdmin.close();
 			}
 		}
-		return new HTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
-	}
-
-	/**
-	 * Creates and initializes a crawl table in hbase.
-	 *
-	 * @param connection
-	 *            the connection
-	 * @param outputTableName
-	 *            the output table name
-	 * @return the table
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	protected Table initializeCrawlTable(final Connection connection, final TableName outputTableName) throws IOException {
-		// an HBase admin object to manage hbase tables.
-		Admin hbaseAdmin = null;
-		try {
-			// create hbase admin instance to manage table attributes
-			hbaseAdmin = connection.getAdmin();
-			if (hbaseAdmin.tableExists(outputTableName)) {
-				boolean foundContentColumnFamily = false;
-				boolean foundCURIColumnFamily = false;
-				log.info("Checking table: " + outputTableName.getNameAsString() + " for structure...");
-				// Check the existing table and manipulate it if necessary
-				// to conform to the pre-existing table schema.
-				HTableDescriptor existingHBaseTable = hbaseAdmin.getTableDescriptor(outputTableName);
-				for (HColumnDescriptor hColumnDescriptor : existingHBaseTable.getFamilies()) {
-					if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseParameters().getContentColumnFamily())) {
-						foundContentColumnFamily = true;
-					} else if (hColumnDescriptor.getNameAsString().equalsIgnoreCase(getHbaseParameters().getCuriColumnFamily())) {
-						foundCURIColumnFamily = true;
-					}
-				}
-
-				// modify the table if it's missing any of the column families.
-				if (!foundContentColumnFamily || !foundCURIColumnFamily) {
-					log.info("Disabling table: " + outputTableName.getNameAsString());
-					hbaseAdmin.disableTable(outputTableName);
-
-					if (!foundContentColumnFamily) {
-						log.info("Adding column to table: " + outputTableName.getNameAsString() + " column: " + getHbaseParameters().getContentColumnFamily());
-						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
-					}
-
-					if (!foundCURIColumnFamily) {
-						log.info("Adding column to table: " + outputTableName.getNameAsString() + " column: " + getHbaseParameters().getCuriColumnFamily());
-						existingHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
-					}
-
-					hbaseAdmin.modifyTable(outputTableName, existingHBaseTable);
-
-					log.info("Enabling table: " + outputTableName.getNameAsString());
-					hbaseAdmin.enableTable(outputTableName);
-				}
-				log.info("Done checking table: " + outputTableName.getNameAsString());
-			} else {
-				// create a new hbase table
-				log.info("Creating table: " + outputTableName.getNameAsString());
-				HTableDescriptor newHBaseTable = new HTableDescriptor(TableName.valueOf(HBaseParameters.defaultHbaseTableNameSpace, outputTableName.getNameAsString()));
-				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getContentColumnFamily()));
-				newHBaseTable.addFamily(new HColumnDescriptor(getHbaseParameters().getCuriColumnFamily()));
-
-				// create the table
-				hbaseAdmin.createTable(newHBaseTable);
-				log.info("Created table: " + newHBaseTable.getNameAsString());
-			}
-
-			if (!hbaseAdmin.tableExists(outputTableName)) {
-				throw new UnexpectedException("table does not exist: " + outputTableName.getNameAsString());
-			}
-			if (!hbaseAdmin.isTableAvailable(outputTableName)) {
-				throw new UnexpectedException("table is not available: " + outputTableName.getNameAsString());
-			}
-			if (hbaseAdmin.isTableDisabled(outputTableName)) {
-				throw new UnexpectedException("table is disabled: " + outputTableName.getNameAsString());
-			}
-			// create the hbase table reference and return it
-			return connection.getTable(outputTableName);
-		} finally {
-			if (hbaseAdmin != null) {
-				hbaseAdmin.close();
-			}
-		}
 	}
 
 	/**
@@ -814,58 +710,31 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 * and storing the results in new column families/columns using the batch
 	 * update object. Or even saving the values in other custom hbase tables or
 	 * other remote data sources. (a.k.a. anything you want)
-	 *
-	 * @param url
-	 *            the url
-	 * @return the string
+	 * 
+	 * @param put
+	 *            the stateful put object containing all the row data to be
+	 *            written.
+	 * @param replayInputStream
+	 *            the replay input stream containing the raw content gotten by
+	 *            heritrix crawler.
+	 * @param streamSize
+	 *            the stream size
+	 * 
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static String createRowKeyFromUrl(String url) {
-		return createRowKeyFromUrl(url, reverseIPAddressesTooDefault);
+		return Keying.createKey(url, Keying.REFERER_URL_SCHEME);
 	}
 
-	/**
-	 * Creates the row key from url.
-	 *
-	 * @param url
-	 *            the url
-	 * @param reverseIPAddressesToo
-	 *            the reverse IP addresses too
-	 * @return the string
-	 */
-	public static String createRowKeyFromUrl(String url, boolean reverseIPAddressesToo) {
-		return Keying.createKey(url, Keying.REFERER_URL_SCHEME, reverseIPAddressesToo);
-	}
-
-	/**
-	 * Creates the url from row key.
-	 *
-	 * @param rowKey
-	 *            the row key
-	 * @return the string
-	 */
 	public static String createUrlFromRowKey(String rowKey) {
-		return createUrlFromRowKey(rowKey, reverseIPAddressesTooDefault);
-	}
-
-	/**
-	 * Creates the url from row key.
-	 *
-	 * @param rowKey
-	 *            the row key
-	 * @param reverseIPAddressesToo
-	 *            the reverse IP addresses too
-	 * @return the string
-	 */
-	public static String createUrlFromRowKey(String rowKey, boolean reverseIPAddressesToo) {
-		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME, reverseIPAddressesToo);
+		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME);
 	}
 
 	/**
 	 * Write the crawled output to the configured HBase table. Write each row
 	 * key as the url with reverse domain and optionally process any content.
-	 *
-	 * @param hBaseWriterProcessor
-	 *            the h base writer processor
+	 * 
 	 * @param curi
 	 *            URI of crawled document
 	 * @param ip
@@ -874,8 +743,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 *            recording input stream that captured the response
 	 * @param recordingInputStream
 	 *            recording output stream that captured the GET request
-	 * @param recordedSize
-	 *            the recorded size
+	 * 
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
@@ -896,6 +764,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 
 		// create an hbase mutation object (the put object)
+		// Put put = new Put(Bytes.toBytes(rowKey), System.currentTimeMillis());
 		// The cell timestamp is the same for all cells in each Put, and its set
 		// to the time the server finished responding back to heritrix.
 		Put put = new Put(Bytes.toBytes(rowKey), curi.getFetchCompletedTime());
@@ -914,7 +783,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 
 		// write the Via string
-		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.getVia().toString() : null);
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.toString() : null);
 		// log the content length
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentLengthColumnName(), String.valueOf(curi.getContentLength()));
 		// write out the content size
@@ -949,7 +818,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// call the method that can be overridden from hbaseWriterProcessor
 			hBaseWriterProcessor.modifyPut(getHbaseParameters(), curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
-			this.hTable.put(put);
+			getHTable().put(put);
 		} finally {
 			// we are closing the streams once we are done using them
 			IOUtils.closeStream(requestStream);
@@ -957,36 +826,12 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 	}
 
-	/**
-	 * Adds the serialized data to put.
-	 *
-	 * @param put
-	 *            the put
-	 * @param colFam
-	 *            the col fam
-	 * @param colQual
-	 *            the col qual
-	 * @param value
-	 *            the value
-	 */
 	private void addSerializedDataToPut(Put put, String colFam, String colQual, String value) {
 		addSerializedDataToPut(put, colFam, colQual, Bytes.toBytes(value != null ? value : ""));
 	}
 
-	/**
-	 * Adds the serialized data to put.
-	 *
-	 * @param put
-	 *            the put
-	 * @param colFam
-	 *            the col fam
-	 * @param colQual
-	 *            the col qual
-	 * @param value
-	 *            the value
-	 */
 	private void addSerializedDataToPut(Put put, String colFam, String colQual, byte[] value) {
-		put.addColumn(Bytes.toBytes(colFam), Bytes.toBytes(colQual), serialize(value));
+		put.add(Bytes.toBytes(colFam), Bytes.toBytes(colQual), serialize(value));
 	}
 
 	/*

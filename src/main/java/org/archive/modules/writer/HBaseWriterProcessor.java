@@ -511,9 +511,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 import org.archive.io.RecordingInputStream;
@@ -551,24 +550,8 @@ import org.archive.util.ArchiveUtils;
  * 	<property name="onlyProcessNewRecords" value="false" />
  * 	<property name="onlyWriteNewRecords" value="false" />
  * 	<property name="contentColumnFamily" value="newcontent" />
- *  <!-- 25 *  1024 * 1024 = 26214400 bytes -->
  *  <property name="defaultMaxFileSizeInBytes" value="26214400" />
- *  <property name="contentColumnFamily" value="n" />
- *  <property name="curiColumnFamily" value="c" />
- *  <property name="contentColumnName" value="raw" />
- *  <property name="ipColumnName" value="ip" />
- *  <property name="pathFromSeedColumnName" value="pfs" />
- *  <property name="isSeedColumnName" value="is" />
- *  <property name="viaColumnName" value="via" />
- *  <property name="urlColumnName" value="url" />
- *  <property name="requestColumnName" value="req" />
- *  <property name="contentTypeColumnName" value="ct" />
- *  <property name="contentSizeColumnName" value="cz" />
- *  <property name="contentLengthColumnName" value="cl" />
- *  <property name="fetchAttmptsColumnName" value="fa" />
- *  <property name="fetchDurationColumnName" value="fd" />
- *  <property name="fetchAnnotationsColumnName" value="an" />
- *  <property name="fetchAnnotationsValueDelimiter" value=", " />
+ *  <!-- 25 *  1024 * 1024 = 26214400 bytes -->
  * 	<!-- Overwrite more options here -->
  * </bean>
  * 
@@ -634,30 +617,17 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	@Override
 	public long getDefaultMaxFileSize() {
 		if (this.hbaseParameters != null) {
-			return this.hbaseParameters.getDefaultMaxFileSizeInBytes();
+			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
 		} 
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.archive.modules.writer.WriterPoolProcessor#setupPool(java.util.
-	 * concurrent.atomic.AtomicInteger)
-	 */
 	@Override
 	protected void setupPool(AtomicInteger serial) {
 		// allow the Heritrix WriterPoolProcessor framework to create new HBaseWriterPools as needed.
 		setPool(generateWriterPool(serial));
 	}
 	
-	/**
-	 * Generate writer pool.
-	 *
-	 * @param serial
-	 *            the serial
-	 * @return the writer pool
-	 */
 	protected WriterPool generateWriterPool(AtomicInteger serial) {
 		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), this.hbaseParameters);
 	}
@@ -766,31 +736,27 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	private boolean isRecordNew(CrawlURI curi) throws IOException {
 		// borrow the writer from the pool
-		HBaseWriter hbaseWriter = ((HBaseWriter) getPool().borrowFile());
+		HBaseWriter hbaseWriter = (HBaseWriter) getPool().borrowFile();
+		// get the client from the writer
+		HTable hbaseTable = hbaseWriter.getHTable();
 		// Here we can generate the rowkey for this uri ...
-		String row = HBaseWriter.createRowKeyFromUrl(curi.toString());
+		String url = curi.toString();
+		String row = HBaseWriter.createRowKeyFromUrl(url);
 		// Default is true since we check for conditions to determine if the row key already exists.
 		boolean isNew = true;
 		try {
 			// and look it up to see if it already exists...
-			Get get = new Get(Bytes.toBytes(row));
-			get.setFilter(new KeyOnlyFilter());
-			Result result = null;
-			// get the client from the writer
-			try {
-				result = hbaseWriter.getHTable().get(get);
-			} catch (IOException e) {
-				log.error("Failed to determine if curi: " + curi.toString() + " - rowkey: " + row
-						+ " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
-				isNew = false;
-			}
-			if (result != null && !result.isEmpty()) {
+			Get rowToGet = new Get(Bytes.toBytes(row));
+			if (hbaseTable.get(rowToGet) != null && !hbaseTable.get(rowToGet).isEmpty()) {
 				// if it exists, then its not new
 				if (log.isDebugEnabled()) {
-					log.debug("Not A NEW Record - Url: " + curi.toString() + " has the existing rowkey: " + row + " and has cell data.");
+					log.debug("Not A NEW Record - Url: " + url + " has the existing rowkey: " + row + " and has cell data.");
 				}
 				isNew = false;
 			}
+		} catch (IOException e) {
+			log.error("Failed to determine if record: " + row + " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
+			isNew = false;
 		} finally {
 			// always return the client back to the pool no matter what
 			try {
@@ -804,17 +770,23 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		// if we are here then the row key must be new  (it does not exist), 
 		// so its a new record, isNew should still be set to "true" at this point.
 		if (log.isDebugEnabled()) {
-			log.debug("Found A NEW Record - Url: " + curi.toString() + " has no existing rowkey: " + row);
+			log.debug("Found A NEW Record - Url: " + url + " has no existing rowkey: " + row );
 		}
 		return isNew;
 	}
 
 	/**
 	 * Write to HBase.
-	 *
+	 * 
 	 * @param curi
 	 *            the curi
+	 * @param recordLength
+	 *            the record length
+	 * @param in
+	 *            the in
+	 * 
 	 * @return the process result
+	 * 
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
@@ -828,7 +800,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 			hbaseWriter.write(this, curi, getHostAddress(curi), curi.getRecorder().getRecordedOutput(), curi.getRecorder().getRecordedInput(), getRecordedSize(curi));
 		} finally {
 			// log total bytes written
-			setTotalBytesWritten(getTotalBytesWritten() + Long.valueOf(hbaseWriter.getPosition() - writerPoolMemberPosition).longValue());
+			setTotalBytesWritten(getTotalBytesWritten() + (hbaseWriter.getPosition() - writerPoolMemberPosition));
 			// return the hbaseWriter client back to the pool.
 			getPool().returnFile(hbaseWriter);
 		}
@@ -844,22 +816,27 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * and storing the results in new column families/columns using the batch
 	 * update object. Or even saving the values in other custom hbase tables or
 	 * other remote data sources. (a.k.a. anything you want)
-	 *
-	 * @param hBaseParameters
-	 *            the h base parameters
+	 * 
+	 * @param hbaseParameters
+	 *            - the configured hbase parameters for this crawl job
+	 * 
 	 * @param curi
 	 *            - This requested uri for this content
+	 * 
 	 * @param ip
 	 *            - the ip the host name in the uri resolves to
+	 * 
 	 * @param put
 	 *            the stateful put object containing all the row data to be
 	 *            written. This is the 'output' object.
+	 * 
 	 * @param recordingOutputStream
 	 *            - request to the server (output from us to the server)
+	 * 
 	 * @param recordingInputStream
 	 *            - the server response (input from the server to us)
+	 * 
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
 	 */
 	public void modifyPut(final HBaseParameters hBaseParameters, final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream,
 	        RecordingInputStream recordingInputStream) throws IOException {

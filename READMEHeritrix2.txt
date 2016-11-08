@@ -1,11 +1,11 @@
 Welcome to HBase-Writer README for Heritrix 2.  
 
 This document can also be found online here:
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/READMEHeritrix2.txt
+http://code.google.com/p/hbase-writer/wiki/READMEHeritrix2
 
 Specific versions of HBase-Writer now support different
 version combinations of Heritrix and HBase. Please refer to
-https://github.com/OpenSourceMasters/hbase-writer/blob/master/VERSIONS.txt
+http://code.google.com/p/hbase-writer/wiki/VERSIONS
 for a more detailed list.
 
 Before reading this document, please make sure the

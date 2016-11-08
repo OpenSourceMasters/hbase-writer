@@ -514,7 +514,6 @@ import org.archive.io.WriterPool;
 import org.archive.io.WriterPoolMember;
 import org.archive.io.WriterPoolSettings;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HBaseWriterPool.
  * 
@@ -556,4 +555,5 @@ public class HBaseWriterPool extends WriterPool {
 			throw new RuntimeException("Couldn't create a " + this.getClass().getName() + " writer object", e);
 		}
 	}
+
 }

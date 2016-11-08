@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO: Auto-generated Javadoc
 /**
  * Utility creating hbase friendly keys. Use fabricating row names or column
  * qualifiers.
@@ -35,14 +34,10 @@ import java.util.regex.Pattern;
  * @see Bytes#split(byte[], byte[], int)
  */
 public class Keying {
-	
-	/** The Constant REFERER_URL_SCHEME. */
 	public static final String REFERER_URL_SCHEME = "r:";
 
-	/** The Constant URI_RE_PARSER. */
 	private static final Pattern URI_RE_PARSER = Pattern.compile("^([^:/?#]+://(?:[^/?#@]+@)?)([^:/?#]+)(.*)$");
 
-	/** The Constant DOMAIN_NAME_DELIMITER. */
 	public static final String DOMAIN_NAME_DELIMITER = ".";
 
 	/**
@@ -64,17 +59,16 @@ public class Keying {
 	 * If authority <code>userinfo</code> is present, will mess up the sort
 	 * (until we do more work).
 	 * </p>
-	 *
-	 * @param u            URL to transform.
-	 * @param scheme the scheme
-	 * @param reverseIPAddressesToo the reverse IP addresses too
+	 * 
+	 * @param u
+	 *            URL to transform.
 	 * @return An opaque URI of artificial 'r' scheme with host portion of URI
 	 *         authority reversed (if present).
 	 * @see #keyToUri(String)
 	 * @see <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC2396</a>
 	 */
 
-	public static String createKey(final String u, String scheme, final boolean reverseIPAddressesToo) {
+	public static String createKey(final String u, String scheme) {
 		if (scheme != null && scheme.length() > 0 && u.startsWith(scheme)) {
 			throw new IllegalArgumentException("Key already starts with a scheme: " + scheme);
 		}
@@ -83,19 +77,18 @@ public class Keying {
 			// If no match, return original String.
 			return u;
 		}
-		return scheme + m.group(1) + reverseHostname(m.group(2), reverseIPAddressesToo) + m.group(3);
+		return scheme + m.group(1) + reverseHostname(m.group(2)) + m.group(3);
 	}
 
 	/**
 	 * Reverse the {@link #createKey(String)} transform.
-	 *
-	 * @param s            <code>URI</code> made by {@link #createKey(String)}.
-	 * @param scheme the scheme
-	 * @param reverseIPAddressesToo the reverse IP addresses too
+	 * 
+	 * @param s
+	 *            <code>URI</code> made by {@link #createKey(String)}.
 	 * @return 'Restored' URI made by reversing the {@link #createKey(String)}
 	 *         transform.
 	 */
-	public static String keyToUri(final String s, final String scheme, final boolean reverseIPAddressesToo) {
+	public static String keyToUri(final String s, final String scheme) {
 		if (scheme == null || s == null) {
 			return s;
 		} else if (!s.toLowerCase().startsWith(scheme.toLowerCase())) {
@@ -109,15 +102,9 @@ public class Keying {
 		}
 		// only return a modified key if we have a matching scheme and both
 		// arguments are not null
-		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2), reverseIPAddressesToo) + uriMatchObject.group(3);
+		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2)) + uriMatchObject.group(3);
 	}
 
-	/**
-	 * Gets the URI matcher.
-	 *
-	 * @param uriText the uri text
-	 * @return the URI matcher
-	 */
 	private static Matcher getURIMatcher(final String uriText) {
 		if (uriText == null || uriText.length() <= 0) {
 			return null;
@@ -125,44 +112,9 @@ public class Keying {
 		return URI_RE_PARSER.matcher(uriText);
 	}
 
-	/**
-	 * Checks if is integer.
-	 *
-	 * @param str the str
-	 * @return true, if is integer
-	 */
-	private static boolean isInteger(String str) {
-		try {
-			Integer.parseInt(str);
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Reverse hostname.
-	 *
-	 * @param hostname the hostname
-	 * @param reverseIPAddressesToo the reverse IP addresses too
-	 * @return the string
-	 */
-	public static String reverseHostname(final String hostname, final boolean reverseIPAddressesToo) {
+	public static String reverseHostname(final String hostname) {
 		if (hostname == null) {
 			return "";
-		}
-		// check for an IP addres,s if we find one, return it, Ip addresses sort
-		// nicely the way they are, no needed to reverse their domain name
-		// tokens.
-		if (!reverseIPAddressesToo) {
-			// check for ip
-			String[] hostNameTokens = hostname.split("\\.");
-			if (hostNameTokens.length == 4) {
-				if (isInteger(hostNameTokens[0]) && isInteger(hostNameTokens[1]) && isInteger(hostNameTokens[2]) && isInteger(hostNameTokens[3])) {
-					return hostname;
-				}
-			}
-
 		}
 		StringBuilder sb = new StringBuilder(hostname.length());
 		Object next;

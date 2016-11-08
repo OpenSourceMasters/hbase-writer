@@ -506,17 +506,15 @@ That's all there is to it!
 package org.archive.io.hbase;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
+import org.testng.Assert;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class TestHBaseWriter.
  */
 public class TestHBaseWriter {
-
-	private static Logger log = Logger.getLogger(TestHBaseWriter.class);
 
 	/** The zkQuorum. */
 	String zkQuorum = "localhost";
@@ -543,10 +541,22 @@ public class TestHBaseWriter {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	@Test()
+	// @Test()
 	public void testCreateHBaseWriter() throws IOException {
 		// Test
-		// removed creation test until in-memory hbase instance can be used for
-		// testing
+		try {
+			hw = new HBaseWriter(new AtomicInteger(), null, null);
+			Assert.assertNull(hw);
+		} catch (IllegalArgumentException e) {
+			Assert.assertNotNull(e);
+		}
+
+		try {
+			hw = new HBaseWriter(new AtomicInteger(), null, new HBaseParameters());
+			Assert.assertNull(hw);
+		} catch (IllegalStateException e) {
+			Assert.assertNotNull(e);
+		}
+
 	}
 }
