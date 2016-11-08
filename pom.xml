@@ -535,6 +535,10 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${plugin.build.site.version}</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${plugin.build.assembly.version}</version>
 				</plugin>
@@ -626,18 +630,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>${plugin.build.site.version}</version>
-				<configuration>
-          			<reportPlugins>
-            			<plugin>
-              				<groupId>org.apache.maven.plugins</groupId>
-              				<artifactId>maven-javadoc-plugin</artifactId>
-              				<configuration>
-                				<additionalparam>${javadoc.opts}</additionalparam>
-              				</configuration>
-            			</plugin>
-          			</reportPlugins>
-        		</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
@@ -747,17 +739,6 @@
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>${plugin.build.site.version}</version>
-				<configuration>
-          			<reportPlugins>
-            			<plugin>
-              				<groupId>org.apache.maven.plugins</groupId>
-              				<artifactId>maven-javadoc-plugin</artifactId>
-              				<configuration>
-                				<additionalparam>${javadoc.opts}</additionalparam>
-              				</configuration>
-            			</plugin>
-          			</reportPlugins>
-        		</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
