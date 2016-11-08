@@ -570,10 +570,6 @@
 				<version>${plugin.build.deploy.version}</version>
 			</plugin>
 			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>${plugin.build.resources.version}</version>
-			</plugin>
-			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>${plugin.build.install.version}</version>
 			</plugin>

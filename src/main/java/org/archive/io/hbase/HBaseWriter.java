@@ -783,7 +783,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		}
 
 		// write the Via string
-		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.toString() : null);
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getViaColumnName(), curi.getVia() != null ? curi.getVia().toString() : null);
 		// log the content length
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentLengthColumnName(), String.valueOf(curi.getContentLength()));
 		// write out the content size
