@@ -523,7 +523,6 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
@@ -546,17 +545,6 @@ import com.google.common.base.Preconditions;
  * 
  */
 public class HBaseWriter extends WriterPoolMember implements Serializer {
-
-	// Currently heritrix-3.2.0 uses guava-r09.jar and HBase 1.x uses
-	// guava-12.0.x
-	// for connections.
-	// guava 12.0.x is not backwards compatible with the older guava-r09 so we
-	// have to use
-	// the deprecated client connections until heritrix uses a newer version of
-	/** The Constant useDeprecatedMethods. */
-	// guava.
-	public final static boolean useDeprecatedMethods = true;
-
 	/** The log. */
 	private static Logger log = Logger.getLogger(HBaseWriter.class.getName());
 
@@ -565,12 +553,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 
 	/** The h table. */
 	private HTable hTable = null;
-
-	/** The client table. */
-	private Table table = null;
-
-	/** The connection. */
-	private Connection connection;
 
 	// by default we should not reverse any ip addresses since they are in the
 	/** The Constant reverseIPAddressesTooDefault. */
@@ -585,15 +567,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 */
 	public HBaseParameters getHbaseParameters() {
 		return hbaseParameters;
-	}
-
-	/**
-	 * Gets the table.
-	 *
-	 * @return the table
-	 */
-	public Table getTable() {
-		return this.table;
 	}
 
 	/**
@@ -625,15 +598,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		this.hbaseParameters = parameters;
 		// create an instance of hbase configuration object
 		Configuration hbaseConfiguration = HBaseConfiguration.create();
-		if (useDeprecatedMethods) {
-			// create an htable reference
-			this.hTable = initializeCrawlHTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
-		} else {
-			// create a connection to hbase
-			this.connection = ConnectionFactory.createConnection(hbaseConfiguration);
-			// create a table reference
-			this.table = initializeCrawlTable(connection, TableName.valueOf(hbaseParameters.getHbaseTableName()));
-		}
+		// create an htable reference
+		this.hTable = initializeCrawlHTable(hbaseConfiguration, hbaseParameters.getHbaseTableName());
 		// set the zk quorum list
 		log.info("setting zookeeper quorum to : " + hbaseParameters.getZkQuorum());
 		hbaseConfiguration.setStrings(HConstants.ZOOKEEPER_QUORUM, hbaseParameters.getZkQuorum().split(","));
@@ -650,26 +616,11 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	 */
 	@Override
 	public void close() {
-		if (useDeprecatedMethods) {
-			try {
-				// close the reference to htable
-				this.hTable.close();
-			} catch (IOException e) {
-				log.log(Level.SEVERE, "cannot close the htable reference after we are done using it.", e);
-			}
-		} else {
-			try {
-				// close the reference to hbase table
-				this.table.close();
-			} catch (IOException e) {
-				log.log(Level.SEVERE, "cannot close the table reference after we are done using it.", e);
-			}
-			try {
-				// close the reference to hbase table connoection
-				this.connection.close();
-			} catch (IOException e) {
-				log.log(Level.SEVERE, "cannot close the table connection reference after we are done using it.", e);
-			}
+		try {
+			// close the reference to htable
+			this.hTable.close();
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "cannot close the htable reference after we are done using it.", e);
 		}
 	}
 
@@ -998,11 +949,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// call the method that can be overridden from hbaseWriterProcessor
 			hBaseWriterProcessor.modifyPut(getHbaseParameters(), curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
-			if (useDeprecatedMethods) {
-				this.hTable.put(put);
-			} else {
-				this.table.put(put);
-			}
+			this.hTable.put(put);
 		} finally {
 			// we are closing the streams once we are done using them
 			IOUtils.closeStream(requestStream);

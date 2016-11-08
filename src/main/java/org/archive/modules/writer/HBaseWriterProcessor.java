@@ -778,11 +778,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 			Result result = null;
 			// get the client from the writer
 			try {
-				if (HBaseWriter.useDeprecatedMethods) {
-					result = hbaseWriter.getHTable().get(get);
-				} else {
-					result = hbaseWriter.getTable().get(get);
-				}
+				result = hbaseWriter.getHTable().get(get);
 			} catch (IOException e) {
 				log.error("Failed to determine if curi: " + curi.toString() + " - rowkey: " + row
 						+ " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
