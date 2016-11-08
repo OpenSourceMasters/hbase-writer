@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// TODO: Auto-generated Javadoc
 /**
  * Utility creating hbase friendly keys. Use fabricating row names or column
  * qualifiers.
@@ -34,10 +35,14 @@ import java.util.regex.Pattern;
  * @see Bytes#split(byte[], byte[], int)
  */
 public class Keying {
+	
+	/** The Constant REFERER_URL_SCHEME. */
 	public static final String REFERER_URL_SCHEME = "r:";
 
+	/** The Constant URI_RE_PARSER. */
 	private static final Pattern URI_RE_PARSER = Pattern.compile("^([^:/?#]+://(?:[^/?#@]+@)?)([^:/?#]+)(.*)$");
 
+	/** The Constant DOMAIN_NAME_DELIMITER. */
 	public static final String DOMAIN_NAME_DELIMITER = ".";
 
 	/**
@@ -59,9 +64,10 @@ public class Keying {
 	 * If authority <code>userinfo</code> is present, will mess up the sort
 	 * (until we do more work).
 	 * </p>
-	 * 
-	 * @param u
-	 *            URL to transform.
+	 *
+	 * @param u            URL to transform.
+	 * @param scheme the scheme
+	 * @param reverseIPAddressesToo the reverse IP addresses too
 	 * @return An opaque URI of artificial 'r' scheme with host portion of URI
 	 *         authority reversed (if present).
 	 * @see #keyToUri(String)
@@ -82,9 +88,10 @@ public class Keying {
 
 	/**
 	 * Reverse the {@link #createKey(String)} transform.
-	 * 
-	 * @param s
-	 *            <code>URI</code> made by {@link #createKey(String)}.
+	 *
+	 * @param s            <code>URI</code> made by {@link #createKey(String)}.
+	 * @param scheme the scheme
+	 * @param reverseIPAddressesToo the reverse IP addresses too
 	 * @return 'Restored' URI made by reversing the {@link #createKey(String)}
 	 *         transform.
 	 */
@@ -105,6 +112,12 @@ public class Keying {
 		return uriMatchObject.group(1) + reverseHostname(uriMatchObject.group(2), reverseIPAddressesToo) + uriMatchObject.group(3);
 	}
 
+	/**
+	 * Gets the URI matcher.
+	 *
+	 * @param uriText the uri text
+	 * @return the URI matcher
+	 */
 	private static Matcher getURIMatcher(final String uriText) {
 		if (uriText == null || uriText.length() <= 0) {
 			return null;
@@ -112,6 +125,12 @@ public class Keying {
 		return URI_RE_PARSER.matcher(uriText);
 	}
 
+	/**
+	 * Checks if is integer.
+	 *
+	 * @param str the str
+	 * @return true, if is integer
+	 */
 	private static boolean isInteger(String str) {
 		try {
 			Integer.parseInt(str);
@@ -121,6 +140,13 @@ public class Keying {
 		return true;
 	}
 
+	/**
+	 * Reverse hostname.
+	 *
+	 * @param hostname the hostname
+	 * @param reverseIPAddressesToo the reverse IP addresses too
+	 * @return the string
+	 */
 	public static String reverseHostname(final String hostname, final boolean reverseIPAddressesToo) {
 		if (hostname == null) {
 			return "";

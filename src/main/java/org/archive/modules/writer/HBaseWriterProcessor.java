@@ -513,7 +513,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
@@ -640,12 +639,25 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.archive.modules.writer.WriterPoolProcessor#setupPool(java.util.
+	 * concurrent.atomic.AtomicInteger)
+	 */
 	@Override
 	protected void setupPool(AtomicInteger serial) {
 		// allow the Heritrix WriterPoolProcessor framework to create new HBaseWriterPools as needed.
 		setPool(generateWriterPool(serial));
 	}
 	
+	/**
+	 * Generate writer pool.
+	 *
+	 * @param serial
+	 *            the serial
+	 * @return the writer pool
+	 */
 	protected WriterPool generateWriterPool(AtomicInteger serial) {
 		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), this.hbaseParameters);
 	}
@@ -760,23 +772,27 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		// Default is true since we check for conditions to determine if the row key already exists.
 		boolean isNew = true;
 		try {
+			// and look it up to see if it already exists...
+			Get get = new Get(Bytes.toBytes(row));
+			get.setFilter(new KeyOnlyFilter());
+			Result result = null;
 			// get the client from the writer
-			Table hbaseTable = hbaseWriter.getHTable();
 			try {
-				// and look it up to see if it already exists...
-				Get get = new Get(Bytes.toBytes(row));
-				get.setFilter(new KeyOnlyFilter());
-				Result result = hbaseTable.get(get);
-				if (result != null && !result.isEmpty()) {
-					// if it exists, then its not new
-					if (log.isDebugEnabled()) {
-						log.debug("Not A NEW Record - Url: " + curi.toString() + " has the existing rowkey: " + row + " and has cell data.");
-					}
-					isNew = false;
+				if (HBaseWriter.useDeprecatedMethods) {
+					result = hbaseWriter.getHTable().get(get);
+				} else {
+					result = hbaseWriter.getTable().get(get);
 				}
 			} catch (IOException e) {
 				log.error("Failed to determine if curi: " + curi.toString() + " - rowkey: " + row
-				        + " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
+						+ " is a new record due to IOExecption.  Deciding the record is already existing for now.", e);
+				isNew = false;
+			}
+			if (result != null && !result.isEmpty()) {
+				// if it exists, then its not new
+				if (log.isDebugEnabled()) {
+					log.debug("Not A NEW Record - Url: " + curi.toString() + " has the existing rowkey: " + row + " and has cell data.");
+				}
 				isNew = false;
 			}
 		} finally {
@@ -799,16 +815,10 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 	/**
 	 * Write to HBase.
-	 * 
+	 *
 	 * @param curi
 	 *            the curi
-	 * @param recordLength
-	 *            the record length
-	 * @param in
-	 *            the in
-	 * 
 	 * @return the process result
-	 * 
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
@@ -838,27 +848,22 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 * and storing the results in new column families/columns using the batch
 	 * update object. Or even saving the values in other custom hbase tables or
 	 * other remote data sources. (a.k.a. anything you want)
-	 * 
-	 * @param hbaseParameters
-	 *            - the configured hbase parameters for this crawl job
-	 * 
+	 *
+	 * @param hBaseParameters
+	 *            the h base parameters
 	 * @param curi
 	 *            - This requested uri for this content
-	 * 
 	 * @param ip
 	 *            - the ip the host name in the uri resolves to
-	 * 
 	 * @param put
 	 *            the stateful put object containing all the row data to be
 	 *            written. This is the 'output' object.
-	 * 
 	 * @param recordingOutputStream
 	 *            - request to the server (output from us to the server)
-	 * 
 	 * @param recordingInputStream
 	 *            - the server response (input from the server to us)
-	 * 
 	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public void modifyPut(final HBaseParameters hBaseParameters, final CrawlURI curi, final String ip, Put put, RecordingOutputStream recordingOutputStream,
 	        RecordingInputStream recordingInputStream) throws IOException {

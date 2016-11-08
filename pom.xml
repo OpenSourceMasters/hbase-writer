@@ -91,7 +91,7 @@
 		<!-- Heritrix3 dependencies, check the heritrix lib/ folder if any are 
 			missing. -->
 		<!-- <springframework.version>4.0.4.RELEASE</springframework.version> -->
-		<springframework.version>4.3.2.RELEASE</springframework.version>
+		<springframework.version>4.3.4.RELEASE</springframework.version>
 
 		<heritrix.version>3.2.0</heritrix.version>
 		<fastutil.version>7.0.13</fastutil.version>
@@ -114,7 +114,7 @@
 		<plugin.xdoclet2.version>2.0.7</plugin.xdoclet2.version>
 		<plugin.build.antrun.version>1.8</plugin.build.antrun.version>
 		<plugin.build.buildnumber.version>1.4</plugin.build.buildnumber.version>
-		<plugin.build.changes.version>2.12</plugin.build.changes.version>
+		<plugin.build.changes.version>2.12.1</plugin.build.changes.version>
 		<!-- Check style plugin 2.17 breaks the site build with a string out of 
 			index error 10-20-2015 -->
 		<plugin.build.checkstyle.version>2.16</plugin.build.checkstyle.version>

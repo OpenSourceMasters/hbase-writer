@@ -507,6 +507,7 @@ That's all there is to it!
 
 package org.archive.io.hbase;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface Serializer.
  */
