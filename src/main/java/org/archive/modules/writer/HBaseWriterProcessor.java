@@ -616,8 +616,8 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	 */
 	@Override
 	public long getDefaultMaxFileSize() {
-		if (this.hbaseParameters != null) {
-			return (this.hbaseParameters.getDefaultMaxFileSizeInBytes());			
+		if (this.getHbaseParameters() != null) {
+			return (this.getHbaseParameters().getDefaultMaxFileSizeInBytes());
 		} 
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
@@ -629,7 +629,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 	}
 	
 	protected WriterPool generateWriterPool(AtomicInteger serial) {
-		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), this.hbaseParameters);
+		return new HBaseWriterPool(serial, this, getPoolMaxActive(), getMaxWaitForIdleMs(), getHbaseParameters());
 	}
 
 	/* (non-Javadoc)
@@ -669,7 +669,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 		// If onlyProcessNewRecords is enabled and the given rowkey has cell
 		// data,then don't process the record.
-		if (hbaseParameters.isOnlyProcessNewRecords()) {
+		if (getHbaseParameters().isOnlyProcessNewRecords()) {
 			try {
 				return isRecordNew(curi);
 			} catch (IOException e) {
@@ -710,7 +710,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 
 		// If onlyWriteNewRecords is enabled and the given rowkey has cell data,
 		// don't write the record.
-		if (hbaseParameters.isOnlyWriteNewRecords()) {
+		if (getHbaseParameters().isOnlyWriteNewRecords()) {
 			try {
 				if (isRecordNew(curi)) {
 					return true;
