@@ -545,6 +545,8 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	/** The log. */
 	private static Logger log = Logger.getLogger(HBaseWriter.class.getName());
 
+	private static final long hbaseRowKeyLengthLimit = 32767l;
+
 	/** The hbase options. */
 	private final HBaseParameters hbaseParameters;
 
@@ -818,7 +820,18 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 			// call the method that can be overridden from hbaseWriterProcessor
 			hBaseWriterProcessor.modifyPut(getHbaseParameters(), curi, ip, put, recordingOutputStream, recordingInputStream);
 			// write the Put object to the HBase table
-			getHTable().put(put);
+			if (put != null && !put.isEmpty()) {
+				if (Bytes.toString(put.getRow()).length() < hbaseRowKeyLengthLimit) {
+					//
+					getHTable().put(put);
+				} else {
+					if (log.isLoggable(Level.FINE)) {
+						log.log(Level.FINE, "Not Writing rowkey, its too long.  url: " + url + " as rowKey: " + rowKey);
+					}
+				}
+			} else {
+				// put is null
+			}
 		} finally {
 			// we are closing the streams once we are done using them
 			IOUtils.closeStream(requestStream);
