@@ -161,7 +161,7 @@
 	<version>0.98.9-SNAPSHOT</version>
 	<name>HBase Writer</name>
 	<description>A library for writing Heritrix crawler (internet archiver) output directly to HBase tables.</description>
-	<url>http://code.google.com/p/hbase-writer</url>
+	<url>https://github.com/OpenSourceMasters/hbase-writer</url>
 
 	<inceptionYear>2007</inceptionYear>
 
@@ -170,13 +170,13 @@
 	</prerequisites>
 
 	<issueManagement>
-		<system>GoogleCode Issues</system>
-		<url>http://code.google.com/p/hbase-writer/issues/list</url>
+		<system>GitHib Issues</system>
+		<url>${project.url}/issues</url>
 	</issueManagement>
 
 	<mailingLists>
 		<mailingList>
-			<name>User List</name>
+			<name>HBase User List</name>
 			<subscribe>hbase-user-subscribe@hadoop.apache.org</subscribe>
 			<unsubscribe>hbase-user-unsubscribe@hadoop.apache.org</unsubscribe>
 			<post>hbase-user@hadoop.apache.org</post>
@@ -184,7 +184,7 @@
 		</mailingList>
 
 		<mailingList>
-			<name>Dev List</name>
+			<name>HBase Dev List</name>
 			<subscribe>hbase-dev-subscribe@hadoop.apache.org</subscribe>
 			<unsubscribe>hbase-dev-unsubscribe@hadoop.apache.org</unsubscribe>
 			<post>hbase-dev@hadoop.apache.org</post>
@@ -192,7 +192,7 @@
 		</mailingList>
 
 		<mailingList>
-			<name>Commits List</name>
+			<name>HBase Commits List</name>
 			<subscribe>hbase-commits-subscribe@hadoop.apache.org</subscribe>
 			<unsubscribe>hbase-commits-unsubscribe@hadoop.apache.org</unsubscribe>
 			<post>hbase-commits@hadoop.apache.org</post>

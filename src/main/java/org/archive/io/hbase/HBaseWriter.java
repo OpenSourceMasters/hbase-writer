@@ -789,7 +789,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		// write out the content size
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getContentSizeColumnName(), String.valueOf(recordedSize));
 		// write out the numbre of fetch attempts
-		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchAttmptsColumnName(), String.valueOf(curi.getFetchAttempts()));
+		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchAttemptsColumnName(), String.valueOf(curi.getFetchAttempts()));
 		// write out the time duration it took to fetch
 		addSerializedDataToPut(put, getHbaseParameters().getCuriColumnFamily(), getHbaseParameters().getFetchDurationColumnName(), String.valueOf(curi.getFetchDuration()));
 		// write out the content type from the server

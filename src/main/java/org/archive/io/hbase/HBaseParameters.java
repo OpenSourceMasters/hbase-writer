@@ -644,7 +644,7 @@ public class HBaseParameters {
 
 	private String contentLengthColumnName = CONTENT_LENGTH_COLUMN_NAME;
 
-	private String fetchAttmptsColumnName = FETCH_ATTEMPTS_COLUMN_NAME;
+	private String fetchAttemptsColumnName = FETCH_ATTEMPTS_COLUMN_NAME;
 
 	private String fetchDurationColumnName = FETCH_DURATION_COLUMN_NAME;
 
@@ -1033,12 +1033,18 @@ public class HBaseParameters {
 		this.contentSizeColumnName = contentSizeColumnName;
 	}
 
-	public String getFetchAttmptsColumnName() {
-		return fetchAttmptsColumnName;
+	public String getFetchAttemptsColumnName() {
+		return fetchAttemptsColumnName;
 	}
 
-	public void setFetchAttmptsColumnName(String fetchAttmptsColumnName) {
-		this.fetchAttmptsColumnName = fetchAttmptsColumnName;
+	@Deprecated
+	// Method is here for deprecated config from previous mispelled names
+	public void setFetchAttmptsColumnName(String fetchAttemptsColumnName) {
+		setFetchAttemptsColumnName(fetchAttemptsColumnName);
+	}
+
+	public void setFetchAttemptsColumnName(String fetchAttemptsColumnName) {
+		this.fetchAttemptsColumnName = fetchAttemptsColumnName;
 	}
 
 	public String getFetchDurationColumnName() {
