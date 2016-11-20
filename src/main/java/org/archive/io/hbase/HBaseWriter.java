@@ -705,35 +705,6 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 	}
 
 	/**
-	 * This is a stub method and is here to allow extension/overriding for
-	 * custom content parsing, data manipulation and to populate new columns.
-	 * 
-	 * For Example : html parsing, text extraction, analysis and transformation
-	 * and storing the results in new column families/columns using the batch
-	 * update object. Or even saving the values in other custom hbase tables or
-	 * other remote data sources. (a.k.a. anything you want)
-	 * 
-	 * @param put
-	 *            the stateful put object containing all the row data to be
-	 *            written.
-	 * @param replayInputStream
-	 *            the replay input stream containing the raw content gotten by
-	 *            heritrix crawler.
-	 * @param streamSize
-	 *            the stream size
-	 * 
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	public static String createRowKeyFromUrl(String url) {
-		return Keying.createKey(url, Keying.REFERER_URL_SCHEME);
-	}
-
-	public static String createUrlFromRowKey(String rowKey) {
-		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME);
-	}
-
-	/**
 	 * Write the crawled output to the configured HBase table. Write each row
 	 * key as the url with reverse domain and optionally process any content.
 	 * 
@@ -755,7 +726,7 @@ public class HBaseWriter extends WriterPoolMember implements Serializer {
 		String url = curi.toString();
 
 		// create the hbase friendly rowkey
-		String rowKey = createRowKeyFromUrl(url);
+		String rowKey = hBaseWriterProcessor.createRowKeyFromUrl(url);
 		if (log.isLoggable(Level.FINE)) {
 			log.log(Level.FINE, "Writing " + url + " as " + rowKey);
 		}

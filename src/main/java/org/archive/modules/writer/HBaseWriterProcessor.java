@@ -522,6 +522,7 @@ import org.archive.io.WriterPool;
 import org.archive.io.hbase.HBaseParameters;
 import org.archive.io.hbase.HBaseWriter;
 import org.archive.io.hbase.HBaseWriterPool;
+import org.archive.io.hbase.Keying;
 import org.archive.io.warc.WARCWriterPoolSettings;
 import org.archive.modules.CrawlURI;
 import org.archive.modules.ProcessResult;
@@ -622,6 +623,14 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		return HBaseParameters.DEFAULT_MAX_FILE_SIZE_IN_BYTES;
 	}
 	
+	public String createRowKeyFromUrl(String url) {
+		return Keying.createKey(url, Keying.REFERER_URL_SCHEME);
+	}
+
+	public String createUrlFromRowKey(String rowKey) {
+		return Keying.keyToUri(rowKey, Keying.REFERER_URL_SCHEME);
+	}
+
 	@Override
 	protected void setupPool(AtomicInteger serial) {
 		// allow the Heritrix WriterPoolProcessor framework to create new HBaseWriterPools as needed.
@@ -741,7 +750,7 @@ public class HBaseWriterProcessor extends WriterPoolProcessor implements WARCWri
 		HTable hbaseTable = hbaseWriter.getHTable();
 		// Here we can generate the rowkey for this uri ...
 		String url = curi.toString();
-		String row = HBaseWriter.createRowKeyFromUrl(url);
+		String row = createRowKeyFromUrl(url);
 		// Default is true since we check for conditions to determine if the row key already exists.
 		boolean isNew = true;
 		try {
